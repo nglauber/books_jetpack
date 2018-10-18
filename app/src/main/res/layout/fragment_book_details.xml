@@ -1,0 +1,94 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="book"
+            type="dominando.android.presentation.binding.Book" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imgCover"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:background="#CCC"
+                android:scaleType="centerInside"
+                app:imageUrl="@{book.coverUrl}" />
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{book.title}"
+                android:textColor="@{book.available ? @color/black : @color/red}"
+                android:textSize="24sp"
+                tools:text="@sample/books.json/data/title" />
+
+            <TextView
+                android:id="@+id/txtAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{book.author}"
+                android:textSize="20sp"
+                tools:text="@sample/books.json/data/author" />
+
+            <TextView
+                android:id="@+id/txtPages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/text_format_book_pages(book.pages)}"
+                tools:text="@sample/books.json/data/pages" />
+
+            <TextView
+                android:id="@+id/txtYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/text_format_book_year(book.year)}"
+                tools:text="@sample/books.json/data/year" />
+
+            <TextView
+                android:id="@+id/txtPublisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{book.publisher.name}"
+                tools:text="@sample/books.json/data/publisher/name" />
+
+            <TextView
+                android:id="@+id/txtAvailable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{book.available ? @string/text_book_available : @string/text_book_unavailable}"
+                tools:text="@sample/books.json/data/available" />
+
+            <TextView
+                android:id="@+id/txtMediaType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{book.mediaType}"
+                tools:text="@sample/books.json/data/mediaType" />
+
+            <RatingBar
+                android:id="@+id/rtbRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:rating="@{book.rating}"
+                tools:text="@sample/books.json/data/rating" />
+        </LinearLayout>
+    </ScrollView>
+</layout>

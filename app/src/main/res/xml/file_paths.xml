@@ -1,0 +1,4 @@
+<paths>
+    <external-path name="book_images" path="Android/data/dominando.android.livros/files/Pictures" />
+    <files-path name="book_images_internal" path="/" />
+</paths>

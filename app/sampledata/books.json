@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "title": "Dominando o Android",
+      "author": "Nelson Glauber",
+      "pages": 950,
+      "year": 2015,
+      "publisher": {
+        "name": "Novatec"
+      },
+      "available": false,
+      "mediaType": "Paper",
+      "rating": 5.0
+    },
+    {
+      "title": "Dominando o Android com Kotlin",
+      "author": "Nelson Glauber",
+      "pages": 960,
+      "year": 2018,
+      "publisher": {
+        "name": "Novatec"
+      },
+      "available": false,
+      "mediaType": "Ebook",
+      "rating": 5.0
+    },
+    {
+      "title": "Clean Code",
+      "author": "Robert Martin",
+      "pages": 420,
+      "year": 2009,
+      "publisher": {
+        "name": "AltaBooks"
+      },
+      "available": true,
+      "mediaType": "Paper",
+      "rating": 5.0
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:id="@+id/content"
+            layout="@layout/content_fragment_book_form" />
+    </ScrollView>
+</layout>

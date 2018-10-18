@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="java.util.List" />
+
+        <import type="dominando.android.presentation.binding.MediaType" />
+
+        <variable
+            name="book"
+            type="dominando.android.presentation.binding.Book" />
+
+        <variable
+            name="presenter"
+            type="dominando.android.livros.BookFormFragment" />
+
+        <variable
+            name="publishers"
+            type="java.util.List&lt;dominando.android.presentation.binding.Publisher&gt;" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imgCoverPhoto"
+            android:layout_width="144dp"
+            android:layout_height="144dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/darker_gray"
+            android:onClick="@{presenter::clickTakePhoto}"
+            android:scaleType="centerInside"
+            app:imageUrl="@{book.coverUrl}" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_book_title"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:text="@={book.title}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_book_author"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:text="@={book.author}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtPages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_book_pages"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:maxLength="4"
+                android:text="@={book.pages}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtYear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_book_year"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:maxLength="4"
+                android:text="@={book.year}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spnPublisher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@{publishers}"
+            android:onItemSelected="@{(p, v, pos, id)->book.setPublisher(publishers[pos])}"
+            android:selection="@{publishers.indexOf(book.publisher)}"
+            android:spinnerMode="dialog" />
+
+        <CheckBox
+            android:id="@+id/chkAvailable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="@={book.available}"
+            android:text="@string/text_book_available" />
+
+        <RadioGroup
+            android:id="@+id/rgMediaType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbMediaPaper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{book.mediaType == MediaType.PAPER}"
+                android:onCheckedChanged="@{presenter::onMediaTypeChanged}"
+                android:text="@string/text_book_media_paper" />
+
+            <RadioButton
+                android:id="@+id/rbMediaEbook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{book.mediaType == MediaType.EBOOK}"
+                android:onCheckedChanged="@{presenter::onMediaTypeChanged}"
+                android:text="@string/text_book_media_ebook" />
+        </RadioGroup>
+
+        <RatingBar
+            android:id="@+id/rtbRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:rating="@={book.rating}" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{presenter::clickSaveBook}"
+            android:text="@string/button_save" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </LinearLayout>
+</layout>

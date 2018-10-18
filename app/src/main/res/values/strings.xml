@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Livros</string>
+
+    <string name="text_format_book_pages">Número de páginas: %1$d</string>
+    <string name="text_format_book_year">Ano de publicação: %1$d</string>
+    <string name="text_book_available">Disponível</string>
+    <string name="text_book_unavailable">Indisponível</string>
+
+    <string name="text_book_media_paper">Impresso</string>
+    <string name="text_book_media_ebook">E-Book</string>
+
+    <string name="text_book_title">Title</string>
+    <string name="text_book_author">Author</string>
+    <string name="text_book_pages">Number of pages</string>
+    <string name="text_book_year">Year of publication</string>
+    <string name="button_save">Save</string>
+
+    <string name="error_google_sign_in">Erro ao efetuar login com a conta do Google.</string>
+    <string name="button_google_sign_in">Login com Google</string>
+
+    <string name="menu_action_logout">Logout</string>
+    <string name="menu_action_edit">Editar</string>
+
+    <string name="message_book_saved">Livro salvo com sucesso!</string>
+    <string name="message_error_invalid_title">Título inválido</string>
+    <string name="message_error_invalid_author">Autor inválido</string>
+    <string name="message_error_invalid_year">Ano inválido</string>
+    <string name="message_error_invalid_pages">Número de páginas inválido</string>
+    <string name="message_error_book_saved">Erro ao salvar livro</string>
+    <string name="message_error_load_books">Erro ao carregar listagem de livros</string>
+    <string name="message_book_removed">Livro excluído</string>
+    <string name="message_error_delete_book">Erro ao excluir livro</string>
+</resources>
