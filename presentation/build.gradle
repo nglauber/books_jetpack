@@ -39,7 +39,6 @@ dependencies {
     implementation project(":data_fb")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    implementation "org.parceler:parceler-api:$parceler_version"
 
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     kapt "com.android.databinding:compiler:$gradle_version"
