@@ -66,7 +66,7 @@ class BookFormFragment : BaseFragment() {
 
     private fun init() {
         viewModel.getState().observe(this, Observer { event ->
-            event?.consumeEvent()?.let { state ->
+            event?.peekContent()?.let { state ->
                 when (state.status) {
                     ViewState.Status.LOADING -> {
                         binding.content.btnSave.isEnabled = false
@@ -79,6 +79,7 @@ class BookFormFragment : BaseFragment() {
                         navController.popBackStack()
                     }
                     ViewState.Status.ERROR -> {
+                        event.consumeEvent()
                         binding.content.btnSave.isEnabled = true
                         binding.content.progressBar.visibility = View.GONE
                         showErrorMessage(R.string.message_error_book_saved)
