@@ -55,6 +55,7 @@ This project is written in Kotlin and it's using the following libraries:
 ## Get started
 This application were created using Android 3.3 Beta 3.
 To run this application, you must have to [create a Firebase Project](https://firebase.google.com/docs/android/setup) and [enable Google Authentication](https://firebase.google.com/docs/auth/android/google-signin).
+Afterwards, you must download the `google_services.json` file from the firebase console and add it `app` module root folder.
 If you want to save data on Firebase Cloud Firestore, [enable this database](https://firebase.google.com/docs/firestore/quickstart) for your project in Firebase Console. Also [enable the Firebase Cloud Storage](https://firebase.google.com/docs/storage/android/start).
 
 To choose the repository to save applications data, just make the following change in the [BookVmFactory.kt](./presentation/src/main/java/dominando/android/presentation/BookVmFactory.kt) file.
