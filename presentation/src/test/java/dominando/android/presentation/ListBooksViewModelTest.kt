@@ -87,7 +87,7 @@ class ListBooksViewModelTest {
 
         assertEquals(
                 ViewState.Status.SUCCESS,
-                bookListViewModel.removeOperation().value?.status
+                bookListViewModel.removeOperation().value?.peekContent()?.status
         )
     }
 }
