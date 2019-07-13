@@ -1,22 +1,18 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
 apply plugin: 'kotlin-kapt'
-
 apply plugin: 'io.fabric'
-
 apply plugin: 'project-report'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion compile_sdk_version
+
     defaultConfig {
         applicationId "dominando.android.livros"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 1
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode version_code
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,35 +32,25 @@ android {
 
 dependencies {
     implementation project(":presentation")
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
-
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
-
-    kapt "com.android.databinding:compiler:$gradle_version"
-
     implementation "com.squareup.picasso:picasso:$picasso_version"
-
     implementation "androidx.recyclerview:recyclerview:$recylerview_version"
-
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
     implementation "com.google.firebase:firebase-auth:$firebase_auth_version"
     implementation "com.google.android.gms:play-services-auth:$playservices_version"
-
     implementation "com.google.android.material:material:$material_design_version"
-
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-
-    implementation("com.crashlytics.sdk.android:crashlytics:$crashlytics_version") {
-        transitive = true
-    }
+    implementation "com.crashlytics.sdk.android:crashlytics:$crashlytics_version"
 
     testImplementation "junit:junit:$junit_version"
+
     androidTestImplementation "androidx.test:runner:$testrunner_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
 }
+
 apply plugin: 'com.google.gms.google-services'
