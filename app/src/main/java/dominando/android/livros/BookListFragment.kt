@@ -4,8 +4,8 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -18,10 +18,8 @@ import dominando.android.presentation.binding.Book
 import kotlinx.android.synthetic.main.fragment_book_list.*
 
 class BookListFragment : BaseFragment() {
-    private val viewModel: BookListViewModel by lazy {
-        ViewModelProviders.of(this,
-                BookVmFactory(requireActivity().application)
-        ).get(BookListViewModel::class.java)
+    private val viewModel: BookListViewModel by viewModels {
+        BookVmFactory(requireActivity().application, router)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,18 +37,18 @@ class BookListFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         updateList(emptyList())
         fabAdd.setOnClickListener {
-            newBook()
+            viewModel.showBookForm()
         }
         init()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.main, menu)
+        inflater.inflate(R.menu.main, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.menu_sign_out) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_sign_out) {
             FirebaseAuth.getInstance().signOut()
             return true
         }
@@ -58,7 +56,7 @@ class BookListFragment : BaseFragment() {
     }
 
     private fun init() {
-        viewModel.getState().observe(this, Observer { viewState ->
+        viewModel.getState().observe(viewLifecycleOwner, Observer { viewState ->
             viewState?.let {
                 when (viewState.status) {
                     ViewState.Status.SUCCESS -> updateList(viewState.data)
@@ -71,7 +69,7 @@ class BookListFragment : BaseFragment() {
                 }
             }
         })
-        viewModel.removeOperation().observe(this, Observer { event ->
+        viewModel.removeOperation().observe(viewLifecycleOwner, Observer { event ->
             event.consumeEvent()?.let { viewState ->
                 when (viewState.status) {
                     ViewState.Status.SUCCESS -> {
@@ -94,7 +92,7 @@ class BookListFragment : BaseFragment() {
                     else 2
             rvBooks.layoutManager = GridLayoutManager(requireContext(), columns)
             rvBooks.adapter = BookAdapter(books) { book ->
-                viewDetails(book)
+                viewModel.showBookDetails(book)
             }
             attachSwipeToRecyclerView()
         }
@@ -124,16 +122,5 @@ class BookListFragment : BaseFragment() {
         val adapter = rvBooks.adapter as BookAdapter
         val book = adapter.books[position]
         viewModel.remove(book)
-    }
-
-    private fun newBook() {
-        navController.navigate(R.id.action_list_to_form)
-    }
-
-    private fun viewDetails(book: Book) {
-        val args = Bundle().apply {
-            putParcelable("book", book)
-        }
-        navController.navigate(R.id.action_list_to_details, args)
     }
 }

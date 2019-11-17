@@ -1,12 +1,11 @@
 package dominando.android.data
 
 import dominando.android.data.model.Book
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {
-    fun saveBook(book: Book): Completable
-    fun loadBooks(): Flowable<List<Book>>
-    fun loadBook(bookId: String): Flowable<Book>
-    fun remove(book: Book): Completable
+    fun loadBooks(): Flow<List<Book>>
+    fun loadBook(bookId: String): Flow<Book?>
+    suspend fun saveBook(book: Book)
+    suspend fun remove(book: Book)
 }

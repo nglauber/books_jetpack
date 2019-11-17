@@ -2,12 +2,14 @@ package dominando.android.livros
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.firebase.auth.FirebaseAuth
+import dominando.android.presentation.Router
 
 class BookActivity : AppCompatActivity() {
 
@@ -15,20 +17,21 @@ class BookActivity : AppCompatActivity() {
     private var authListener: FirebaseAuth.AuthStateListener =
             FirebaseAuth.AuthStateListener {
                 if (it.currentUser == null) {
-                    goToLogin()
+                    router.showLogin()
                 }
             }
 
-    private val navController: NavController by lazy {
-        Navigation.findNavController(this, R.id.navHost)
+    val router: Router by lazy {
+        AppRouter(this)
     }
-    private val rootScreens = setOf(R.id.signInFragment, R.id.listBooks)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book)
-        val appBarConfiguration = AppBarConfiguration.Builder(rootScreens).build()
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+
+        if (firebaseAuth.currentUser != null) {
+            router.showBooksList()
+        }
     }
 
     override fun onStart() {
@@ -42,22 +45,14 @@ class BookActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp()
+        return router.navigationUp()
     }
 
     override fun onBackPressed() {
-        if (rootScreens.contains(navController.currentDestination?.id)) {
+        if (router.isInRootScreen()) {
             finish()
         } else {
             super.onBackPressed()
         }
-    }
-
-    private fun goToLogin() {
-        val options = NavOptions.Builder()
-                .setLaunchSingleTop(true)
-                .setPopUpTo(R.id.signInFragment, false)
-                .build()
-        navController.navigate(R.id.signInFragment, null, options)
     }
 }

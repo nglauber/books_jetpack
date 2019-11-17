@@ -28,6 +28,16 @@ android {
     configurations.all {
         resolutionStrategy.force "androidx.arch.core:core-runtime:$core_runtime_version"
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    testOptions {
+        animationsDisabled = true
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -35,6 +45,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation 'androidx.fragment:fragment-ktx:1.2.0-rc02'
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
@@ -49,8 +60,12 @@ dependencies {
 
     testImplementation "junit:junit:$junit_version"
 
-    androidTestImplementation "androidx.test:runner:$testrunner_version"
+    androidTestImplementation "androidx.test.ext:junit:$testrunner_version"
+    androidTestImplementation "androidx.arch.core:core-testing:$android_arch_test"
+    androidTestImplementation "androidx.test:rules:$testrules_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
+    androidTestImplementation "org.hamcrest:hamcrest-integration:$hamcrest_version"
 }
 
 apply plugin: 'com.google.gms.google-services'

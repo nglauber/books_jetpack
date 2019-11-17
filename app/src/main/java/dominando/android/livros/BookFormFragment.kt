@@ -11,8 +11,8 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import dominando.android.livros.common.FilePicker
 import dominando.android.livros.databinding.FragmentBookFormBinding
 import dominando.android.presentation.BookFormViewModel
@@ -23,10 +23,8 @@ import dominando.android.presentation.binding.MediaType
 import dominando.android.presentation.binding.Publisher
 
 class BookFormFragment : BaseFragment() {
-    private val viewModel: BookFormViewModel by lazy {
-        ViewModelProviders.of(this,
-                BookVmFactory(requireActivity().application)
-        ).get(BookFormViewModel::class.java)
+    private val viewModel: BookFormViewModel by viewModels {
+        BookVmFactory(requireActivity().application, router)
     }
     private lateinit var binding: FragmentBookFormBinding
     private val filePicker: FilePicker by lazy {
@@ -53,7 +51,8 @@ class BookFormFragment : BaseFragment() {
                 Publisher("2", "Outra")
         )
         binding.content.presenter = this
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
+        lifecycle.addObserver(viewModel)
         init()
     }
 
@@ -76,7 +75,7 @@ class BookFormFragment : BaseFragment() {
                         binding.content.btnSave.isEnabled = true
                         binding.content.progressBar.visibility = View.GONE
                         showMessageSuccess()
-                        navController.popBackStack()
+
                     }
                     ViewState.Status.ERROR -> {
                         event.consumeEvent()

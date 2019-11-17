@@ -47,15 +47,15 @@ This project is written in Kotlin and it's using the following libraries:
 * Material Design Components Library;
 * [Jetpack Libraries](https://developer.android.com/jetpack/) (Navigation, Data Binding, View Model, Lifecycle, LiveData and Room);
 * [Firebase Libraries for Android](https://firebase.google.com/docs/android/setup) (Authentication, Firestore and Storage);
-* [RXJava](https://github.com/ReactiveX/RxJava)
+* [Coroutines](https://github.com/Kotlin/kotlinx.coroutines)
 * [Picasso](http://square.github.io/picasso/)
 * JUnit
-* [Mockito](http://site.mockito.org/)
+* [Mockito](http://site.mockito.org/) and [MockK](https://github.com/mockk/mockk)
 
 ## Get started
-This application were created using Android 3.3 Beta 3.
+The project is compatible with Android Studio 3.5.2.
 To run this application, you must have to [create a Firebase Project](https://firebase.google.com/docs/android/setup) and [enable Google Authentication](https://firebase.google.com/docs/auth/android/google-signin).
-Afterwards, you must download the `google_services.json` file from the firebase console and add it `app` module root folder.
+Afterwards, you must have to download the `google_services.json` file from the firebase console and add it `app` module root folder.
 If you want to save data on Firebase Cloud Firestore, [enable this database](https://firebase.google.com/docs/firestore/quickstart) for your project in Firebase Console. Also [enable the Firebase Cloud Storage](https://firebase.google.com/docs/storage/android/start).
 
 To choose the repository to save applications data, just make the following change in the [BookVmFactory.kt](./presentation/src/main/java/dominando/android/presentation/BookVmFactory.kt) file.

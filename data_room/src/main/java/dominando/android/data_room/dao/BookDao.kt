@@ -1,21 +1,24 @@
 package dominando.android.data_room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import dominando.android.data_room.entity.Book
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(book: Book): Completable
+    suspend fun save(book: Book)
 
     @Delete
-    fun delete(vararg book: Book): Completable
+    suspend fun delete(vararg book: Book)
 
     @Query("SELECT * FROM Book WHERE title LIKE :title ORDER BY title")
-    fun bookByTitle(title: String = "%"): Flowable<List<Book>>
+    fun bookByTitle(title: String = "%"): Flow<List<Book>>
 
     @Query("SELECT * FROM Book WHERE id = :id")
-    fun bookById(id: String): Flowable<Book>
+    fun bookById(id: String): Flow<Book>
 }

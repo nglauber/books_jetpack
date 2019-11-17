@@ -2,19 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
-    app:startDestination="@id/listBooks">
+    app:startDestination="@id/signInFragment">
     <fragment
         android:id="@+id/listBooks"
         android:name="dominando.android.livros.BookListFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_book_list">
-        <action
-            android:id="@+id/action_list_to_form"
-            app:destination="@id/formBook"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_right"
-            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_list_to_details"
             app:destination="@id/bookDetails"
@@ -28,13 +21,6 @@
         android:name="dominando.android.livros.BookDetailsFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_book_details">
-        <action
-            android:id="@+id/action_details_to_form"
-            app:destination="@id/formBook"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_right"
-            app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="book"
             app:argType="dominando.android.presentation.binding.Book"
@@ -54,5 +40,9 @@
         android:id="@+id/signInFragment"
         android:name="dominando.android.livros.SignInFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_sign_in" />
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_listBooks"
+            app:destination="@id/listBooks" />
+    </fragment>
 </navigation>

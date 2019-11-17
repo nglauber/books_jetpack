@@ -10,24 +10,40 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import dominando.android.data.BooksRepository
 import dominando.android.data.model.Book
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.util.UUID
+import java.util.concurrent.Callable
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class FbRepository : BooksRepository {
     private val fbAuth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
     private val storageRef = FirebaseStorage.getInstance().reference.child(BOOKS_KEY)
 
-    override fun saveBook(book: Book): Completable {
-        return Completable.create { emitter ->
+    override suspend fun saveBook(book: Book) {
+        return suspendCoroutine { continuation ->
             val currentUser = fbAuth.currentUser
             if (currentUser == null) {
-                Completable.error(RuntimeException("Unauthorized used."))
+                continuation.resumeWithException(RuntimeException("Unauthorized used."))
             } else {
                 val db = firestore
                 val collection = db.collection(BOOKS_KEY)
@@ -48,15 +64,13 @@ class FbRepository : BooksRepository {
                             if (task.isSuccessful) {
                                 if (book.coverUrl.startsWith("file://")) {
                                     uploadFile(book)
-                                } else {
-                                    emitter.onComplete()
                                 }
                             } else {
-                                emitter.onError(RuntimeException("Fail to upload book's cover."))
+                                continuation.resumeWithException(RuntimeException("Fail to save book."))
                             }
                         }
-                        .addOnSuccessListener { emitter.onComplete() }
-                        .addOnFailureListener { e -> emitter.onError(e) }
+                        .addOnSuccessListener { continuation.resume(Unit) }
+                        .addOnFailureListener { e -> continuation.resumeWithException(e) }
 
             }
         }
@@ -69,49 +83,62 @@ class FbRepository : BooksRepository {
             firestore.collection(BOOKS_KEY)
                     .document(book.id)
                     .update(COVER_URL_KEY, book.coverUrl)
-        }.addOnCompleteListener { task ->
-            Completable.complete()
         }.addOnFailureListener {
-            Completable.error(RuntimeException("Fail to upload book's cover."))
+            throw RuntimeException("Fail to upload book's cover.")
         }
     }
 
-    override fun loadBooks(): Flowable<List<Book>> {
-        return Flowable.create({ emitter ->
-            val currentUser = fbAuth.currentUser
-            firestore.collection(BOOKS_KEY)
-                    .whereEqualTo(USER_ID_KEY, currentUser?.uid)
-                    .addSnapshotListener { snapshot, e ->
-                        if (e == null) {
-                            val books = snapshot?.map { document ->
-                                document.toObject(Book::class.java)
-                            }
-                            books?.let { emitter.onNext(it) }
+    override fun loadBooks(): Flow<List<Book>> {
+        val observerChannel = Channel<List<Book>>(Channel.CONFLATED)
 
-                        } else {
-                            emitter.onError(e)
-                        }
+        val currentUser = fbAuth.currentUser
+        firestore.collection(BOOKS_KEY)
+                .whereEqualTo(USER_ID_KEY, currentUser?.uid)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        observerChannel.close(e)
+                        return@addSnapshotListener
                     }
-        }, BackpressureStrategy.LATEST)
+
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        val books = snapshot.map { document ->
+                            document.toObject(Book::class.java)
+                        }
+                        books.let {
+                            observerChannel.offer(it)
+                        }
+                    } else {
+                        observerChannel.offer(emptyList())
+                    }
+                }
+        return observerChannel.consumeAsFlow()
     }
 
-    override fun loadBook(bookId: String): Flowable<Book> {
-        return Flowable.create({ emitter ->
+    override fun loadBook(bookId: String): Flow<Book?> {
+        val observerChannel = Channel<Book?>(Channel.CONFLATED)
+
+        return channelFlow {
             firestore.collection(BOOKS_KEY)
                     .document(bookId)
                     .addSnapshotListener { snapshot, e ->
-                        if (e == null) {
-                            val book = snapshot?.toObject(Book::class.java)
-                            book?.let { emitter.onNext(it) }
+                        if (e != null) {
+                            observerChannel.close(e)
+                            return@addSnapshotListener
+                        }
+                        if (snapshot != null && !snapshot.exists()) {
+                            val book = snapshot.toObject(Book::class.java)
+                            book?.let {
+                                observerChannel.offer(it)
+                            }
                         } else {
-                            emitter.onError(e)
+                            observerChannel.offer(null)
                         }
                     }
-        }, BackpressureStrategy.LATEST)
+        }
     }
 
-    override fun remove(book: Book): Completable {
-        return Completable.create { emitter ->
+    override suspend fun remove(book: Book) {
+        return suspendCoroutine { continuation ->
             val db = firestore
             db.collection(BOOKS_KEY)
                     .document(book.id)
@@ -121,15 +148,17 @@ class FbRepository : BooksRepository {
                             storageRef.child(book.id)
                                     .delete()
                                     .addOnSuccessListener {
-                                        emitter.onComplete()
+                                        continuation.resume(Unit)
                                     }
                                     .addOnFailureListener { e ->
-                                        emitter.onError(e)
+                                        continuation.resumeWithException(e)
                                     }
+                        } else {
+                            continuation.resume(Unit)
                         }
                     }
                     .addOnFailureListener { e ->
-                        emitter.onError(e)
+                        continuation.resumeWithException(e)
                     }
         }
     }

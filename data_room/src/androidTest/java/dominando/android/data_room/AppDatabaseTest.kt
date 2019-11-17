@@ -2,12 +2,16 @@ package dominando.android.data_room
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dominando.android.data.model.MediaType
 import dominando.android.data.model.Publisher
 import dominando.android.data_room.database.AppDatabase
 import dominando.android.data_room.entity.Book
+import junit.framework.Assert.assertEquals
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -39,7 +43,7 @@ class AppDatabaseTest {
     @Before
     fun initDb() {
         appDatabase = Room.inMemoryDatabaseBuilder(
-                InstrumentationRegistry.getContext(),
+                InstrumentationRegistry.getInstrumentation().context,
                 AppDatabase::class.java
         ).build()
     }
@@ -50,26 +54,25 @@ class AppDatabaseTest {
     }
 
     @Test
-    fun insertBook() {
-        val test = appDatabase.bookDao().save(dummyBook).test()
-        test.assertComplete()
+    fun insertBook() = runBlocking {
+        appDatabase.bookDao().save(dummyBook)
     }
 
     @Test
-    fun insertedBookMustBeReturned() {
+    fun insertedBookMustBeReturned() = runBlocking {
         val bookId = dummyBook.id
-        val testSave = appDatabase.bookDao().save(dummyBook).test()
-        testSave.assertComplete()
-        val loadedBook = appDatabase.bookDao().bookById(bookId).test()
-        loadedBook.assertValue { it == dummyBook }
+        appDatabase.bookDao().save(dummyBook)
+
+        val book = appDatabase.bookDao().bookById(bookId).first()
+        assertEquals(book, dummyBook)
     }
 
     @Test
-    fun updateAllBookFields() {
+    fun updateAllBookFields() = runBlocking {
         val bookId = dummyBook.id
         val dao = appDatabase.bookDao()
-        val testSave = dao.save(dummyBook).test()
-        testSave.assertComplete()
+        dao.save(dummyBook)
+
         val updatedBook = dummyBook.copy(
                 title = "Novo",
                 author = "Nilson",
@@ -81,15 +84,14 @@ class AppDatabaseTest {
                 mediaType = MediaType.PAPER,
                 rating = 2.5f
         )
-        val testUpdate = dao.save(updatedBook).test()
-        testUpdate.assertComplete()
+        dao.save(updatedBook)
 
-        val testLoadBook = appDatabase.bookDao().bookById(bookId).test()
-        testLoadBook.assertValue { it == updatedBook }
+        val book = appDatabase.bookDao().bookById(bookId).first()
+        assertEquals(book, updatedBook)
     }
 
     @Test
-    fun loadAllInsertedBooks() {
+    fun loadAllInsertedBooks() = runBlocking {
         val dao = appDatabase.bookDao()
 
         val allBooks = listOf(
@@ -98,22 +100,18 @@ class AppDatabaseTest {
                 dummyBook.copy(id = "3")
         )
         allBooks.forEach {
-            val testSave = dao.save(it).test()
-            testSave.assertComplete()
+            dao.save(it)
         }
-        dao.bookByTitle()
-                .test()
-                .assertValue {
-                    it.size == allBooks.size && it.containsAll(allBooks)
-                }
+        val list = dao.bookByTitle().first()
+        assertEquals(list.size, allBooks.size)
+        assert(list.containsAll(allBooks))
     }
 
     @Test
-    fun removeBook() {
+    fun removeBook() = runBlocking {
         val dao = appDatabase.bookDao()
-        val testSave = dao.save(dummyBook).test()
-        testSave.assertComplete()
-        val testDelete = dao.delete(dummyBook).test()
-        testDelete.assertComplete()
+        dao.save(dummyBook)
+
+        dao.delete(dummyBook)
     }
 }

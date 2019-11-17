@@ -1,40 +1,35 @@
 package dominando.android.domain
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dominando.android.data.BooksRepository
 import dominando.android.domain.data.DataFactory
-import dominando.android.domain.executor.PostExecutionThread
 import dominando.android.domain.interactor.ViewBookDetailsUseCase
-import io.reactivex.Flowable
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 
 class ViewBookDetailsUseCaseTest {
-    private val postExecutionThread: PostExecutionThread = mock()
 
-    private val repository: BooksRepository = mock()
+    private val repository: BooksRepository = mockk()
 
     private val dummyBook = DataFactory.dummyBook()
 
     @Before
     fun init() {
-        MockitoAnnotations.initMocks(this)
-        whenever(repository.loadBook(any()))
-                .thenReturn(
-                        Flowable.just(dummyBook)
-                )
+        coEvery { repository.loadBook(any()) } returns flowOf(dummyBook)
     }
 
     @Test
-    fun testBookDetailsIsLoaded() {
+    fun testBookDetailsIsLoaded() = runBlocking {
         // Given
-        val useCase = ViewBookDetailsUseCase(repository, postExecutionThread)
+        val useCase = ViewBookDetailsUseCase(repository)
         // When
-        val test = useCase.buildUseCaseFlowable("1").test()
+        val book = useCase.execute("1").first()
         // Then
-        test.assertValue(dummyBook)
+        assertEquals(book, dummyBook)
     }
 }

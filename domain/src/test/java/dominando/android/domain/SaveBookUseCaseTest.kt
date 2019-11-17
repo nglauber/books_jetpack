@@ -1,39 +1,32 @@
 package dominando.android.domain
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dominando.android.data.BooksRepository
 import dominando.android.domain.data.DataFactory
-import dominando.android.domain.executor.PostExecutionThread
 import dominando.android.domain.interactor.SaveBookUseCase
-import io.reactivex.Completable
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 
 class SaveBookUseCaseTest {
 
-    private val postExecutionThread: PostExecutionThread = mock()
-
-    private val repository: BooksRepository = mock()
+    private val repository: BooksRepository = mockk()
 
     private val dummyBook = DataFactory.dummyBook()
 
     @Before
     fun init() {
-        whenever(repository.saveBook(any()))
-                .thenReturn(
-                        Completable.complete()
-                )
+        coEvery { repository.saveBook(any()) } returns Unit
     }
 
     @Test
-    fun testBookIsSaved() {
+    fun testBookIsSaved() = runBlocking {
         // Given
-        val useCase = SaveBookUseCase(repository, postExecutionThread)
+        val useCase = SaveBookUseCase(repository)
         // When
-        val test = useCase.buildUseCaseCompletable(dummyBook).test()
+        useCase.execute(dummyBook)
         // Then
-        test.assertComplete()
+        // No exceptions
     }
 }

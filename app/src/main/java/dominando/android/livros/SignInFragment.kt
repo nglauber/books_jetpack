@@ -7,19 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
-import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 
 class SignInFragment : Fragment() {
 
-    private var googleApiClient: GoogleApiClient? = null
+    private var googleApiClient: GoogleSignInClient? = null
     private var fbAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,49 +39,49 @@ class SignInFragment : Fragment() {
     }
 
     private fun initGoogleSignIn() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
+                //.requestProfile() // uncomment if you need the profile
                 .requestEmail()
                 .build()
-        googleApiClient = GoogleApiClient.Builder(requireContext())
-                .enableAutoManage(requireActivity()) {
-                    showErrorSignIn()
-                }
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build()
+        googleApiClient = GoogleSignIn.getClient(requireActivity(), options)
     }
+
     private fun signIn() {
-        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
+        val signInIntent = googleApiClient?.signInIntent
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_GOOGLE_SIGN_IN) {
-            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-            if (result.isSuccess) {
-                val account = result.signInAccount
-                if (account != null) {
-                    firebaseAuthWithGoogle(account)
-                } else {
+            val result = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = result.getResult(ApiException::class.java)
+                if (account == null) {
                     showErrorSignIn()
+                } else {
+                    firebaseAuthWithGoogle(account)
                 }
-            } else {
+            } catch (e: ApiException) {
                 showErrorSignIn()
             }
         }
     }
-    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount?) {
+        val credential = GoogleAuthProvider.getCredential(acct?.getIdToken(), null)
         fbAuth.signInWithCredential(credential)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
                         val nav = Navigation.findNavController(requireActivity(), R.id.navHost)
-                        nav.popBackStack()
+                        nav.navigate(R.id.listBooks)
                     } else {
                         showErrorSignIn()
                     }
                 }
     }
+
     private fun showErrorSignIn() {
         Toast.makeText(requireContext(), R.string.error_google_sign_in, Toast.LENGTH_SHORT).show()
     }

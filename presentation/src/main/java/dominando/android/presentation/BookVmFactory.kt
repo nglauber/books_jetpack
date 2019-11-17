@@ -11,9 +11,12 @@ import dominando.android.domain.interactor.ListBooksUseCase
 import dominando.android.domain.interactor.RemoveBookUseCase
 import dominando.android.domain.interactor.SaveBookUseCase
 import dominando.android.domain.interactor.ViewBookDetailsUseCase
-import dominando.android.presentation.executor.UiThread
 
-class BookVmFactory(private val application: Application) : ViewModelProvider.NewInstanceFactory() {
+class BookVmFactory(
+        private val application: Application,
+        private val router: Router
+) : ViewModelProvider.NewInstanceFactory() {
+
     // TODO replace this class by DI with Koin
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         // Remote repository with Firebase
@@ -22,11 +25,11 @@ class BookVmFactory(private val application: Application) : ViewModelProvider.Ne
         val repo = RoomRepository(AppDatabase.getDatabase(application), LocalFileHelper())
         return when {
             modelClass.isAssignableFrom(BookListViewModel::class.java) ->
-                BookListViewModel(ListBooksUseCase(repo, UiThread()), RemoveBookUseCase(repo, UiThread())) as T
+                BookListViewModel(router, ListBooksUseCase(repo), RemoveBookUseCase(repo)) as T
             modelClass.isAssignableFrom(BookDetailsViewModel::class.java) ->
-                BookDetailsViewModel(ViewBookDetailsUseCase(repo, UiThread())) as T
+                BookDetailsViewModel(router, ViewBookDetailsUseCase(repo)) as T
             modelClass.isAssignableFrom(BookFormViewModel::class.java) ->
-                BookFormViewModel(SaveBookUseCase(repo, UiThread())) as T
+                BookFormViewModel(router, SaveBookUseCase(repo)) as T
             else -> throw IllegalArgumentException("ViewModel Not Found")
         }
     }

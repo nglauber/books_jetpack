@@ -1,39 +1,35 @@
 package dominando.android.domain
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import dominando.android.data.BooksRepository
 import dominando.android.domain.data.DataFactory
-import dominando.android.domain.executor.PostExecutionThread
 import dominando.android.domain.interactor.ListBooksUseCase
-import io.reactivex.Flowable
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
 class ListBooksUseCaseTest {
-    private val postExecutionThread: PostExecutionThread = mock()
-
-    private val repository: BooksRepository = mock()
+    private val repository: BooksRepository = mockk()
 
     private val dummyBooksList = DataFactory.dummyBookList()
 
     @Before
     fun init() {
-        whenever(repository.loadBooks())
-                .thenReturn(
-                        Flowable.just(dummyBooksList)
-                )
+        coEvery { repository.loadBooks() } returns flowOf(dummyBooksList)
     }
 
     @Test
-    fun testBooksListIsLoaded() {
+    fun testBooksListIsLoaded() = runBlocking {
         // Given
-        val useCase = ListBooksUseCase(repository, postExecutionThread)
+        val useCase = ListBooksUseCase(repository)
         // When
-        val testFlowable = useCase.buildUseCaseFlowable().test()
+        val list = useCase.execute().first()
         // Then
-        testFlowable.assertValue {
-            it.size == dummyBooksList.size && it.containsAll(dummyBooksList)
-        }
+        assertEquals(list.size, dummyBooksList.size)
+        assert(list.containsAll(dummyBooksList))
     }
 }

@@ -2,12 +2,14 @@ package dominando.android.data_room
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import dominando.android.data.model.Book
 import dominando.android.data.model.MediaType
 import dominando.android.data.model.Publisher
 import dominando.android.data_room.database.AppDatabase
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -29,7 +31,7 @@ class RoomRepositoryTest {
 
     @Before
     fun initDb() {
-        val db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(),
+        val db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().context,
                 AppDatabase::class.java).build()
         repo = RoomRepository(db, LocalFileHelper())
         dummyBook = Book().apply {
@@ -47,72 +49,70 @@ class RoomRepositoryTest {
     }
 
     @Test
-    fun insertBook() {
-        repo.saveBook(dummyBook).test().assertComplete()
+    fun insertBook() = runBlocking {
+        repo.saveBook(dummyBook)
     }
 
     @Test
-    fun insertTheSameBookIdMustUpdateTheRecord() {
+    fun insertTheSameBookIdMustUpdateTheRecord() = runBlocking {
         val id = dummyBook.id
-        repo.saveBook(dummyBook).test().assertComplete()
-        val book1 = repo.loadBook(id).test().values().first()
-        repo.saveBook(dummyBook).test().assertComplete()
-        val book2 = repo.loadBook(id).test().values().first()
+        repo.saveBook(dummyBook)
+        val book1 = repo.loadBook(id).first()
+        repo.saveBook(dummyBook)
+        val book2 = repo.loadBook(id).first()
         assertEquals(book1, book2)
         assertEquals(book1, dummyBook)
         assertEquals(book2, dummyBook)
     }
 
     @Test
-    fun insertedBookMustBeReturned() {
+    fun insertedBookMustBeReturned() = runBlocking {
         val bookId = dummyBook.id
-        repo.saveBook(dummyBook).test().assertComplete()
-        val loadedBook = repo.loadBook(bookId).test().values().first()
+        repo.saveBook(dummyBook)
+        val loadedBook = repo.loadBook(bookId).first()
         assertEquals(dummyBook, loadedBook)
     }
 
     @Test
-    fun updateAllBookFields() {
+    fun updateAllBookFields() = runBlocking {
         val bookId = dummyBook.id
-        repo.saveBook(dummyBook).test().assertComplete()
+        repo.saveBook(dummyBook)
         val updatedBook = newBook(bookId)
-        repo.saveBook(updatedBook).test().assertComplete()
-        val loadedBook = repo.loadBook(bookId).test().values().first()
+        repo.saveBook(updatedBook)
+        val loadedBook = repo.loadBook(bookId).first()
         assertEquals(updatedBook, loadedBook)
     }
 
     @Test
-    fun loadAllInsertedBooks() {
+    fun loadAllInsertedBooks() = runBlocking {
         val allBooks = listOf(
                 newBook("1"),
                 newBook("2"),
                 newBook("3")
         )
         allBooks.forEach {
-            repo.saveBook(it).test().assertComplete()
+            repo.saveBook(it)
         }
-        repo.loadBooks()
-                .test()
-                .assertValue {
-                    allBooks.size == it.size && it.containsAll(allBooks)
-                }
+        val list = repo.loadBooks().first()
+        assertEquals(allBooks.size, list.size)
+        assert(list.containsAll(allBooks))
     }
 
     @Test
-    fun removeBook() {
-        repo.saveBook(dummyBook).test().assertComplete()
-        repo.remove(dummyBook).test().assertComplete()
+    fun removeBook() = runBlocking {
+        repo.saveBook(dummyBook)
+        repo.remove(dummyBook)
     }
 
     @Test
-    fun removeBookWithCoverRemovesTheFile() {
-        val context = InstrumentationRegistry.getTargetContext()
+    fun removeBookWithCoverRemovesTheFile() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val cover = File(context.filesDir, "${dummyBook.id}.jpg")
         Assert.assertTrue(cover.createNewFile())
         Assert.assertTrue(cover.exists())
         val book = dummyBook.copy(coverUrl = "file://${cover.absolutePath}")
-        repo.saveBook(book).test().assertComplete()
-        repo.remove(book).test().assertComplete()
+        repo.saveBook(book)
+        repo.remove(book)
         Assert.assertFalse(cover.exists())
     }
 

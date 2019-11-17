@@ -28,14 +28,14 @@ dependencies {
     implementation project(":data")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "androidx.room:room-rxjava2:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
-
+    implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     testImplementation "junit:junit:$junit_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
+    androidTestImplementation "androidx.test.ext:junit:$testrunner_version"
     androidTestImplementation "androidx.arch.core:core-testing:$core_testing_version"
     androidTestImplementation "androidx.test:runner:$testrunner_version"
 }
