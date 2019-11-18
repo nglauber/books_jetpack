@@ -1,47 +1,43 @@
 package dominando.android.livros
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigation
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import com.google.firebase.auth.FirebaseAuth
+import androidx.appcompat.app.AppCompatActivity
 import dominando.android.presentation.Router
+import dominando.android.presentation.auth.Auth
+import dominando.android.presentation.auth.AuthStateListener
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 class BookActivity : AppCompatActivity() {
 
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private var authListener: FirebaseAuth.AuthStateListener =
-            FirebaseAuth.AuthStateListener {
-                if (it.currentUser == null) {
-                    router.showLogin()
+    val router: Router by inject { parametersOf(this@BookActivity) }
+
+    val auth: Auth<Int, Intent> by inject { parametersOf(this@BookActivity) }
+
+    private val authListener: AuthStateListener =
+            object : AuthStateListener {
+                override fun onAuthChanged(isLoggedIn: Boolean) {
+                    if (!isLoggedIn) {
+                        router.showLogin()
+                    }
                 }
             }
-
-    val router: Router by lazy {
-        AppRouter(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book)
-
-        if (firebaseAuth.currentUser != null) {
-            router.showBooksList()
-        }
     }
 
     override fun onStart() {
         super.onStart()
-        firebaseAuth.addAuthStateListener(authListener)
+        auth.addAuthChangeListener(authListener)
     }
 
     override fun onStop() {
         super.onStop()
-        firebaseAuth.removeAuthStateListener(authListener)
+        auth.removeAuthChangeListener(authListener)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -54,5 +50,34 @@ class BookActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            try {
+                auth.handleSignInResult(data,
+                        {
+                            router.showBooksList()
+                        },
+                        {
+                            showErrorSignIn()
+                        })
+            } catch (e: Exception) {
+                showErrorSignIn()
+            }
+        }
+    }
+
+    fun startSignIn() {
+        auth.startSignIn(RC_GOOGLE_SIGN_IN)
+    }
+
+    private fun showErrorSignIn() {
+        Toast.makeText(this, R.string.error_google_sign_in, Toast.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        const val RC_GOOGLE_SIGN_IN = 1
     }
 }

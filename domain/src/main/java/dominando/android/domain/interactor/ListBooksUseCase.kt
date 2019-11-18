@@ -5,7 +5,7 @@ import dominando.android.data.model.Book
 import kotlinx.coroutines.flow.Flow
 
 open class ListBooksUseCase(
-        private val repository: BooksRepository
+    private val repository: BooksRepository
 ) {
     fun execute(): Flow<List<Book>> {
         return repository.loadBooks()

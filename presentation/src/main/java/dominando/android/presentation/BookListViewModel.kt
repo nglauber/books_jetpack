@@ -1,22 +1,27 @@
 package dominando.android.presentation
 
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dominando.android.domain.interactor.ListBooksUseCase
 import dominando.android.domain.interactor.RemoveBookUseCase
+import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
 import dominando.android.presentation.livedata.LiveEvent
+import java.lang.Exception
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
-import dominando.android.presentation.binding.Book as BookBinding
 
 class BookListViewModel(
-        private val router: Router,
-        private val loadBooksUseCase: ListBooksUseCase,
-        private val removeBookUseCase: RemoveBookUseCase
+    private val loadBooksUseCase: ListBooksUseCase,
+    private val removeBookUseCase: RemoveBookUseCase
 
 ) : ViewModel(), LifecycleObserver {
 
@@ -62,13 +67,5 @@ class BookListViewModel(
                 removeOperation.postValue(LiveEvent(ViewState(ViewState.Status.ERROR, error = e)))
             }
         }
-    }
-
-    fun showBookDetails(book: BookBinding) {
-        router.showBookDetails(book)
-    }
-
-    fun showBookForm() {
-        router.showBookForm(null)
     }
 }

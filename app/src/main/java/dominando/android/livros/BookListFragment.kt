@@ -2,34 +2,38 @@ package dominando.android.livros
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
+import dominando.android.livros.common.BaseFragment
 import dominando.android.presentation.BookListViewModel
-import dominando.android.presentation.BookVmFactory
 import dominando.android.presentation.ViewState
 import dominando.android.presentation.binding.Book
 import kotlinx.android.synthetic.main.fragment_book_list.*
+import org.koin.android.ext.android.inject
 
 class BookListFragment : BaseFragment() {
-    private val viewModel: BookListViewModel by viewModels {
-        BookVmFactory(requireActivity().application, router)
-    }
+    private val viewModel: BookListViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_book_list, container, false)
     }
 
@@ -37,7 +41,7 @@ class BookListFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         updateList(emptyList())
         fabAdd.setOnClickListener {
-            viewModel.showBookForm()
+            router.showBookForm(null)
         }
         init()
     }
@@ -49,7 +53,7 @@ class BookListFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_sign_out) {
-            FirebaseAuth.getInstance().signOut()
+            auth.signOut()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -92,7 +96,7 @@ class BookListFragment : BaseFragment() {
                     else 2
             rvBooks.layoutManager = GridLayoutManager(requireContext(), columns)
             rvBooks.adapter = BookAdapter(books) { book ->
-                viewModel.showBookDetails(book)
+                router.showBookDetails(book)
             }
             attachSwipeToRecyclerView()
         }
@@ -102,14 +106,18 @@ class BookListFragment : BaseFragment() {
         val swipe = object : ItemTouchHelper.SimpleCallback(
                 0,
                 ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(recyclerView: RecyclerView,
-                                viewHolder: RecyclerView.ViewHolder,
-                                target: RecyclerView.ViewHolder): Boolean {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 return false
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder,
-                                  direction: Int) {
+            override fun onSwiped(
+                viewHolder: RecyclerView.ViewHolder,
+                direction: Int
+            ) {
                 val position = viewHolder.adapterPosition
                 deleteBookFromPosition(position)
             }

@@ -2,10 +2,10 @@ package dominando.android.livros
 
 import android.view.View
 import android.widget.RatingBar
-import org.hamcrest.Matcher
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import org.hamcrest.Matcher
 
 class RatingBarAction : ViewAction {
     private var rating: Float = 0f

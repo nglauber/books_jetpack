@@ -5,8 +5,8 @@ import android.widget.RatingBar
 import androidx.test.espresso.matcher.BoundedMatcher
 import org.hamcrest.Description
 
-class RatingBarMatcher(private val rating: Float)
-    : BoundedMatcher<View, RatingBar>(RatingBar::class.java) {
+class RatingBarMatcher(private val rating: Float) :
+    BoundedMatcher<View, RatingBar>(RatingBar::class.java) {
     override fun describeTo(description: Description?) {
         description
                 ?.appendText("with hint rating value:")

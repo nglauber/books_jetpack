@@ -4,13 +4,15 @@ import dominando.android.data.BooksRepository
 import dominando.android.data.model.Book
 import dominando.android.data.util.FileHelper
 import dominando.android.data_room.database.AppDatabase
+import java.lang.RuntimeException
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.lang.RuntimeException
-import java.util.*
 
-class RoomRepository(db: AppDatabase,
-                     private val fileHelper: FileHelper) : BooksRepository {
+class RoomRepository(
+    db: AppDatabase,
+    private val fileHelper: FileHelper
+) : BooksRepository {
 
     private val bookDao = db.bookDao()
 

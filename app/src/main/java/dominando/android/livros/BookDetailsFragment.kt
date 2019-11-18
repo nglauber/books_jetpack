@@ -1,20 +1,23 @@
 package dominando.android.livros
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import dominando.android.livros.common.BaseFragment
 import dominando.android.livros.databinding.FragmentBookDetailsBinding
 import dominando.android.presentation.BookDetailsViewModel
-import dominando.android.presentation.BookVmFactory
 import dominando.android.presentation.ViewState
 import dominando.android.presentation.binding.Book
+import org.koin.android.ext.android.inject
 
 class BookDetailsFragment : BaseFragment() {
-    private val viewModel: BookDetailsViewModel by viewModels {
-        BookVmFactory(requireActivity().application, this.router)
-    }
+    private val viewModel: BookDetailsViewModel by inject()
 
     private lateinit var binding: FragmentBookDetailsBinding
 
@@ -44,7 +47,7 @@ class BookDetailsFragment : BaseFragment() {
             when (viewState.status) {
                 ViewState.Status.SUCCESS -> binding.book = viewState.data
                 ViewState.Status.LOADING -> {} /* TODO */
-                ViewState.Status.ERROR -> {}/* TODO */
+                ViewState.Status.ERROR -> {} /* TODO */
             }
         })
         val book = arguments?.getParcelable<Book>("book")
@@ -61,7 +64,7 @@ class BookDetailsFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_edit_book) {
             binding.book?.let {
-                viewModel.editBook(it)
+                router.showBookForm(it)
             }
             return true
         }

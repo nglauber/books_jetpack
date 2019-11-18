@@ -49,6 +49,7 @@ This project is written in Kotlin and it's using the following libraries:
 * [Firebase Libraries for Android](https://firebase.google.com/docs/android/setup) (Authentication, Firestore and Storage);
 * [Coroutines](https://github.com/Kotlin/kotlinx.coroutines)
 * [Picasso](http://square.github.io/picasso/)
+* [Koin](https://github.com/InsertKoinIO/koin)
 * JUnit
 * [Mockito](http://site.mockito.org/) and [MockK](https://github.com/mockk/mockk)
 
@@ -58,14 +59,18 @@ To run this application, you must have to [create a Firebase Project](https://fi
 Afterwards, you must have to download the `google_services.json` file from the firebase console and add it `app` module root folder.
 If you want to save data on Firebase Cloud Firestore, [enable this database](https://firebase.google.com/docs/firestore/quickstart) for your project in Firebase Console. Also [enable the Firebase Cloud Storage](https://firebase.google.com/docs/storage/android/start).
 
-To choose the repository to save applications data, just make the following change in the [BookVmFactory.kt](./presentation/src/main/java/dominando/android/presentation/BookVmFactory.kt) file.
+To choose the repository to save applications data, just make the following change in the [PresentationModule.kt](./presentation/src/main/java/dominando/android/presentation/di/PresentationModule.kt) file.
 ```kotlin
-// Use either of the lines below
+val presentationModule = module {
 
-// Remote repository with Firebase
-val repo = FbRepository()
-// Local repository with Room + SQLite
-val repo = RoomRepository(AppDatabase.getDatabase(application), LocalFileHelper())
+    single {
+        // Use either of the lines below
+        
+        // Local repository with Room + SQLite
+        RoomRepository(AppDatabase.getDatabase(application), LocalFileHelper()) as BooksRepository
+        // Remote repository with Firebase
+        FbRepository() as BooksRepository
+    }
 ```
 And that's it! You're good to go.
 

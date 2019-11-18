@@ -6,7 +6,7 @@ import android.os.Environment
 import android.text.format.DateFormat
 import androidx.core.content.FileProvider
 import java.io.File
-import java.util.*
+import java.util.Date
 
 class FilePicker(val context: Context) {
     fun createTempFile(): File {

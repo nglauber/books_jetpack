@@ -8,6 +8,8 @@ import dominando.android.data.model.Book
 import dominando.android.data.model.MediaType
 import dominando.android.data.model.Publisher
 import dominando.android.data_room.database.AppDatabase
+import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -16,9 +18,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
-import java.util.*
-
 
 @RunWith(AndroidJUnit4::class)
 class RoomRepositoryTest {

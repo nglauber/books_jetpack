@@ -1,8 +1,8 @@
 package dominando.android.data_room
 
-import java.util.*
 import dominando.android.data.model.Book
 import dominando.android.data_room.entity.Book as BookEntity
+import java.util.UUID
 
 object BookConverter {
     fun fromData(binding: Book) = BookEntity(

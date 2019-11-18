@@ -1,5 +1,6 @@
 package dominando.android.livros
 
+import android.content.Intent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.GeneralLocation
@@ -19,9 +20,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dominando.android.livros.RatingBarAction.Companion.setRating
 import dominando.android.livros.RatingBarMatcher.Companion.withRatingValue
+import dominando.android.presentation.auth.Auth
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
+import org.koin.dsl.module
 
 // Run with the command below because via terminal we can disable animations
 // gradlew connectedAndroidTest
@@ -29,6 +33,26 @@ import org.junit.runner.RunWith
 class BooksCrudTest {
     @get:Rule
     val activityRule = ActivityTestRule(BookActivity::class.java)
+
+    init {
+        loadKoinModules(module {
+            factory(override = true) {
+                object : Auth<Int, Intent>() {
+                    override fun isLoggedIn(): Boolean = true // skip login screen
+
+                    override fun startSignIn(authInfo: Int?) {
+                        TODO("not implemented") // this should not be called during the test
+                    }
+                    override fun handleSignInResult(result: Intent?, onSuccess: () -> Unit, onError: () -> Unit) {
+                        TODO("not implemented") // this should not be called during the test
+                    }
+                    override fun signOut() {
+                        TODO("not implemented") // this should not be called during the test
+                    }
+                } as Auth<Int, Intent>
+            }
+        })
+    }
 
     @Test
     fun crudTest() {
@@ -65,12 +89,18 @@ class BooksCrudTest {
     private fun delete() {
         onView(withId(R.id.rvBooks)).perform(
                 RecyclerViewActions.actionOnItemAtPosition<BookAdapter.ViewHolder>(0, GeneralSwipeAction(
-                        Swipe.SLOW, GeneralLocation.BOTTOM_RIGHT, GeneralLocation.BOTTOM_LEFT,
+                        Swipe.FAST, GeneralLocation.BOTTOM_RIGHT, GeneralLocation.BOTTOM_LEFT,
                         Press.FINGER)))
     }
 
     private fun fillBookForm(
-            title: String, author: String, pages: Int, year: Int, available: Boolean, rating: Float) {
+        title: String,
+        author: String,
+        pages: Int,
+        year: Int,
+        available: Boolean,
+        rating: Float
+    ) {
         onView(withId(R.id.edtTitle)).perform(replaceText(title))
         onView(withId(R.id.edtAuthor)).perform(replaceText(author))
         onView(withId(R.id.edtPages)).perform(replaceText(pages.toString()))

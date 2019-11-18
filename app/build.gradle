@@ -38,6 +38,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    lintOptions {
+        abortOnError true
+        warningsAsErrors false
+    }
 }
 
 dependencies {
@@ -57,6 +61,10 @@ dependencies {
     implementation "com.google.android.material:material:$material_design_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "com.crashlytics.sdk.android:crashlytics:$crashlytics_version"
+
+    implementation "org.koin:koin-core:$koin_version"
+    implementation "org.koin:koin-android:$koin_version"
+    implementation "org.koin:koin-android-scope:$koin_version"
 
     testImplementation "junit:junit:$junit_version"
 

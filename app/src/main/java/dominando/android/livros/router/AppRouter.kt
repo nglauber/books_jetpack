@@ -1,18 +1,20 @@
-package dominando.android.livros
+package dominando.android.livros.router
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import dominando.android.livros.R
 import dominando.android.presentation.Router
 import dominando.android.presentation.binding.Book
 
 class AppRouter(
-        activity: AppCompatActivity
-): Router {
+    activity: FragmentActivity
+) : Router {
 
     private val navController: NavController by lazy {
         Navigation.findNavController(activity, R.id.navHost)
@@ -21,7 +23,9 @@ class AppRouter(
 
     init {
         val appBarConfiguration = AppBarConfiguration.Builder(rootScreens).build()
-        NavigationUI.setupActionBarWithNavController(activity, navController, appBarConfiguration)
+        if (activity is AppCompatActivity) {
+            NavigationUI.setupActionBarWithNavController(activity, navController, appBarConfiguration)
+        }
     }
 
     override fun showLogin() {

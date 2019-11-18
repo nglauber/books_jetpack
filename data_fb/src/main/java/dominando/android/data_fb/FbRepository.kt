@@ -10,29 +10,17 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import dominando.android.data.BooksRepository
 import dominando.android.data.model.Book
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
-import java.util.concurrent.Callable
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 
 class FbRepository : BooksRepository {
     private val fbAuth = FirebaseAuth.getInstance()
@@ -54,7 +42,6 @@ class FbRepository : BooksRepository {
                                 book.id = doc?.id ?: UUID.randomUUID().toString()
                                 doc?.update(mapOf(USER_ID_KEY to currentUser.uid, ID_KEY to book.id))
                             }
-
                 } else {
                     collection.document(book.id)
                             .set(book, SetOptions.merge())
@@ -71,7 +58,6 @@ class FbRepository : BooksRepository {
                         }
                         .addOnSuccessListener { continuation.resume(Unit) }
                         .addOnFailureListener { e -> continuation.resumeWithException(e) }
-
             }
         }
     }

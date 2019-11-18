@@ -3,7 +3,7 @@ package dominando.android.presentation.data
 import dominando.android.data.model.Book
 import dominando.android.data.model.MediaType
 import dominando.android.data.model.Publisher
-import java.util.*
+import java.util.UUID
 
 object DataFactory {
     fun dummyBookList() = listOf(

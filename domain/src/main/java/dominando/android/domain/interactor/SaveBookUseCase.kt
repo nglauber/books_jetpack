@@ -2,10 +2,10 @@ package dominando.android.domain.interactor
 
 import dominando.android.data.BooksRepository
 import dominando.android.data.model.Book
-import java.util.*
+import java.util.Calendar
 
 open class SaveBookUseCase(
-        private val repository: BooksRepository
+    private val repository: BooksRepository
 ) {
     suspend fun execute(params: Book) {
         return if (bookIsValid(params)) {

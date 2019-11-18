@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
-    app:startDestination="@id/signInFragment">
+    app:startDestination="@id/listBooks">
     <fragment
         android:id="@+id/listBooks"
         android:name="dominando.android.livros.BookListFragment"
@@ -38,11 +38,7 @@
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
-        android:name="dominando.android.livros.SignInFragment"
+        android:name="dominando.android.livros.auth.SignInFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_sign_in" >
-        <action
-            android:id="@+id/action_signInFragment_to_listBooks"
-            app:destination="@id/listBooks" />
-    </fragment>
+        tools:layout="@layout/fragment_sign_in" />
 </navigation>

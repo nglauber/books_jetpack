@@ -1,47 +1,43 @@
 package dominando.android.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.*
 import dominando.android.data.model.Book
 import dominando.android.domain.interactor.ViewBookDetailsUseCase
 import dominando.android.presentation.binding.BookConverter
 import dominando.android.presentation.data.DataFactory
+import io.mockk.coEvery
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.flow
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Captor
-import dominando.android.presentation.binding.Book as BookBinding
 
 class DetailViewModelTest {
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private var viewBookDetailsUseCase = mock<ViewBookDetailsUseCase>()
+    @get:Rule
+    val testCoroutineRule = TestCoroutineRule()
+
+    private var viewBookDetailsUseCase = mockk<ViewBookDetailsUseCase>()
     private var bookDetailsViewModel = BookDetailsViewModel(viewBookDetailsUseCase)
-
-    @Captor
-    private val captor = argumentCaptor<((Book) -> Unit)>()
-
-    @Captor
-    private val captorError = argumentCaptor<((Throwable) -> Unit)>()
 
     @Test
     fun fetchBookDetailsExecutesUseCase() {
         val bookId = "1"
         bookDetailsViewModel.loadBook(bookId)
-        verify(viewBookDetailsUseCase, times(1))
-                .execute(eq(bookId), any(), any(), eq(null))
+        verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
     }
 
     @Test
     fun fetchBookReturnsSuccess() {
         val book = DataFactory.dummyBook()
+        initMock(book)
         val bookId = book.id
         bookDetailsViewModel.loadBook(bookId)
 
-        verify(viewBookDetailsUseCase)
-                .execute(eq(bookId), captor.capture(), any(), eq(null))
-        captor.firstValue.invoke(book)
+        verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
 
         assertEquals(
                 ViewState.Status.SUCCESS,
@@ -51,12 +47,11 @@ class DetailViewModelTest {
     @Test
     fun fetchBookReturnsData() {
         val book = DataFactory.dummyBook()
+        initMock(book)
         val bookId = book.id
         bookDetailsViewModel.loadBook(bookId)
 
-        verify(viewBookDetailsUseCase)
-                .execute(eq(bookId), captor.capture(), any(), eq(null))
-        captor.firstValue.invoke(book)
+        verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
 
         val bookBinding = BookConverter.fromData(book)
         assertEquals(
@@ -66,17 +61,21 @@ class DetailViewModelTest {
     }
 
     @Test
-    fun fetchSpeakersReturnsError() {
+    fun fetchBookReturnsError() {
         val book = DataFactory.dummyBook()
         val bookId = book.id
         bookDetailsViewModel.loadBook(bookId)
 
-        verify(viewBookDetailsUseCase)
-                .execute(any(), captor.capture(), captorError.capture(), eq(null))
-        captorError.firstValue.invoke(RuntimeException())
+        verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
 
         assertEquals(
                 ViewState.Status.ERROR,
                 bookDetailsViewModel.getState().value?.status)
+    }
+
+    private fun initMock(
+        book: Book = DataFactory.dummyBook()
+    ) {
+        coEvery { viewBookDetailsUseCase.execute(book.id) } returns flow { emit(book) }
     }
 }

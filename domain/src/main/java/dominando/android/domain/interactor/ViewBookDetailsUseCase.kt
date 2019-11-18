@@ -5,7 +5,7 @@ import dominando.android.data.model.Book
 import kotlinx.coroutines.flow.Flow
 
 open class ViewBookDetailsUseCase(
-        private val repository: BooksRepository
+    private val repository: BooksRepository
 ) {
     fun execute(bookId: String): Flow<Book?> {
         return repository.loadBook(bookId)

@@ -8,18 +8,17 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dominando.android.domain.interactor.SaveBookUseCase
+import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
 import dominando.android.presentation.livedata.LiveEvent
+import java.io.File
+import java.lang.Exception
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.lang.Exception
-import dominando.android.presentation.binding.Book as BookBinding
 
 class BookFormViewModel(
-        private val router: Router,
-        private val useCase: SaveBookUseCase
+    private val saveBookUseCase: SaveBookUseCase
 ) : ViewModel(), LifecycleObserver {
 
     var book: BookBinding? = null
@@ -40,11 +39,10 @@ class BookFormViewModel(
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    useCase.execute(BookConverter.toData(book))
+                    saveBookUseCase.execute(BookConverter.toData(book))
                 }
                 shouldDeleteImage = false
                 state.postValue(LiveEvent(ViewState(ViewState.Status.SUCCESS)))
-                router.back()
             } catch (e: Exception) {
                 state.postValue(LiveEvent(ViewState(ViewState.Status.ERROR, error = e)))
             }

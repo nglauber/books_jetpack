@@ -1,19 +1,21 @@
 package dominando.android.presentation
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dominando.android.domain.interactor.ViewBookDetailsUseCase
+import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
+import java.lang.Exception
+import java.lang.RuntimeException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import java.lang.RuntimeException
-import dominando.android.presentation.binding.Book as BookBinding
 
 class BookDetailsViewModel(
-        private val route: Router,
-        private val useCase: ViewBookDetailsUseCase
+    private val viewBookDetailsUseCase: ViewBookDetailsUseCase
 ) : ViewModel() {
 
     private val state: MutableLiveData<ViewState<BookBinding>> = MutableLiveData()
@@ -25,7 +27,7 @@ class BookDetailsViewModel(
             viewModelScope.launch {
                 state.postValue(ViewState(ViewState.Status.LOADING))
                 try {
-                    useCase.execute(id)
+                    viewBookDetailsUseCase.execute(id)
                             .flowOn(Dispatchers.IO)
                             .collect { book ->
                                 if (book != null) {
@@ -47,9 +49,5 @@ class BookDetailsViewModel(
                 }
             }
         }
-    }
-
-    fun editBook(book: BookBinding) {
-        route.showBookForm(book)
     }
 }

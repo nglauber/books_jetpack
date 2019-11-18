@@ -8,8 +8,8 @@ import dominando.android.data.model.MediaType
 import dominando.android.data.model.Publisher
 import dominando.android.data_room.database.AppDatabase
 import dominando.android.data_room.entity.Book
+import java.util.UUID
 import junit.framework.Assert.assertEquals
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -17,8 +17,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
-
 
 @RunWith(AndroidJUnit4::class)
 class AppDatabaseTest {
