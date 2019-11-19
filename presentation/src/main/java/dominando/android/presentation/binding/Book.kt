@@ -3,7 +3,7 @@ package dominando.android.presentation.binding
 import android.os.Parcelable
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
-import dominando.android.presentation.BR
+import androidx.databinding.library.baseAdapters.BR
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
