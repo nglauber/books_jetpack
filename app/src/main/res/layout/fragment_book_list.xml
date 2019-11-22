@@ -1,24 +1,51 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="dominando.android.livros.BookListFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvBooks"
+    <data>
+        <import type="dominando.android.presentation.ViewState" />
+
+        <variable
+            name="viewModel"
+            type="dominando.android.presentation.BookListViewModel" />
+
+        <variable
+            name="presenter"
+            type="dominando.android.livros.BookListFragment" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item_book" />
+        tools:context="dominando.android.livros.BookListFragment">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:tint="@android:color/white"
-        app:fabSize="normal"
-        app:srcCompat="@drawable/ic_add" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvBooks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:data="@{viewModel.state.data}"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="@integer/cols"
+            tools:listitem="@layout/item_book" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:tint="@android:color/white"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_add" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:isVisible="@{viewModel.state.status == ViewState.Status.LOADING}"
+            app:layout_anchor="@+id/rvBooks"
+            app:layout_anchorGravity="center" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

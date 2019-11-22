@@ -1,28 +1,30 @@
 package dominando.android.livros
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dominando.android.livros.common.BaseFragment
+import dominando.android.livros.databinding.FragmentBookListBinding
 import dominando.android.presentation.BookListViewModel
 import dominando.android.presentation.ViewState
-import dominando.android.presentation.binding.Book
-import kotlinx.android.synthetic.main.fragment_book_list.*
 import org.koin.android.ext.android.inject
 
 class BookListFragment : BaseFragment() {
     private val viewModel: BookListViewModel by inject()
+
+    private lateinit var rvBooks : RecyclerView
+
+    private val bookAdapter by lazy {
+        BookAdapter { book ->
+            router.showBookDetails(book)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,16 +35,27 @@ class BookListFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_book_list, container, false)
+    ): View {
+        val binding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_book_list,
+                container,
+                false) as FragmentBookListBinding
+
+        return binding.run {
+            lifecycleOwner = this@BookListFragment
+            viewModel      = this@BookListFragment.viewModel
+
+            /* Init UI */
+            initRecyclerView(rvBooks)
+            initFab(fabAdd)
+
+            root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateList(emptyList())
-        fabAdd.setOnClickListener {
-            router.showBookForm(null)
-        }
         init()
     }
 
@@ -60,16 +73,12 @@ class BookListFragment : BaseFragment() {
     }
 
     private fun init() {
-        viewModel.getState().observe(viewLifecycleOwner, Observer { viewState ->
+        viewModel.state().observe(viewLifecycleOwner, Observer { viewState ->
             viewState?.let {
-                when (viewState.status) {
-                    ViewState.Status.SUCCESS -> updateList(viewState.data)
-                    ViewState.Status.LOADING -> { /* TODO */
-                    }
-                    ViewState.Status.ERROR ->
-                        Toast.makeText(requireContext(),
-                                R.string.message_error_load_books,
-                                Toast.LENGTH_SHORT).show()
+                if (viewState.status == ViewState.Status.ERROR) {
+                    Toast.makeText(requireContext(),
+                            R.string.message_error_load_books,
+                            Toast.LENGTH_SHORT).show()
                 }
             }
         })
@@ -89,16 +98,15 @@ class BookListFragment : BaseFragment() {
         lifecycle.addObserver(viewModel)
     }
 
-    private fun updateList(books: List<Book>?) {
-        books?.let {
-            val columns =
-                    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 1
-                    else 2
-            rvBooks.layoutManager = GridLayoutManager(requireContext(), columns)
-            rvBooks.adapter = BookAdapter(books) { book ->
-                router.showBookDetails(book)
-            }
-            attachSwipeToRecyclerView()
+    private fun initRecyclerView(recyclerView: RecyclerView) {
+        rvBooks = recyclerView
+        recyclerView.adapter = bookAdapter
+        attachSwipeToRecyclerView()
+    }
+
+    private fun initFab(fab: FloatingActionButton) {
+        fab.setOnClickListener {
+            router.showBookForm(null)
         }
     }
 
@@ -127,8 +135,8 @@ class BookListFragment : BaseFragment() {
     }
 
     private fun deleteBookFromPosition(position: Int) {
-        val adapter = rvBooks.adapter as BookAdapter
-        val book = adapter.books[position]
-        viewModel.remove(book)
+        bookAdapter.getBook(position)?.let { book ->
+            viewModel.remove(book)
+        }
     }
 }

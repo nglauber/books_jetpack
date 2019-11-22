@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
@@ -18,40 +18,39 @@ import dominando.android.livros.databinding.FragmentBookFormBinding
 import dominando.android.presentation.BookFormViewModel
 import dominando.android.presentation.ViewState
 import dominando.android.presentation.binding.Book
-import dominando.android.presentation.binding.MediaType
-import dominando.android.presentation.binding.Publisher
 import org.koin.android.ext.android.inject
 
 class BookFormFragment : BaseFragment() {
     private val viewModel: BookFormViewModel by inject()
-    private lateinit var binding: FragmentBookFormBinding
+
     private val filePicker: FilePicker by lazy {
         FilePicker(requireContext())
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_book_form, container, false
-        )
-        return binding.root
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View {
+        val binding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_book_form,
+                container, false) as FragmentBookFormBinding
+
+        return binding.run {
+            lifecycleOwner    = this@BookFormFragment
+            content.presenter = this@BookFormFragment
+            content.viewModel = this@BookFormFragment.viewModel
+            root
+        }
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewModel.book == null) {
-            viewModel.book = arguments?.getParcelable("book") ?: Book()
+        arguments?.getParcelable<Book>("book")?.let {
+            viewModel.setBook(it)
         }
-        binding.content.book = viewModel.book
-        binding.content.publishers = listOf(
-                Publisher("1", "Novatec"),
-                Publisher("2", "Outra")
-        )
-        binding.content.presenter = this
-        binding.lifecycleOwner = this
         lifecycle.addObserver(viewModel)
         init()
     }
@@ -59,50 +58,25 @@ class BookFormFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == RC_CAMERA) {
-            binding.content.book?.coverUrl = "file://${viewModel.tempImageFile?.absolutePath}"
+            viewModel.book().value?.coverUrl = "file://${viewModel.tempImageFile?.absolutePath}"
         }
     }
 
     private fun init() {
-        viewModel.getState().observe(viewLifecycleOwner, Observer { event ->
-            event?.peekContent()?.let { state ->
+        viewModel.state.observe(viewLifecycleOwner, Observer { event ->
+            event?.let { state ->
                 when (state.status) {
-                    ViewState.Status.LOADING -> {
-                        binding.content.btnSave.isEnabled = false
-                        binding.content.progressBar.visibility = View.VISIBLE
-                    }
+                    ViewState.Status.LOADING -> Log.d(TAG, "Process is loading")
                     ViewState.Status.SUCCESS -> {
-                        binding.content.btnSave.isEnabled = true
-                        binding.content.progressBar.visibility = View.GONE
                         showMessageSuccess()
                         router.back()
                     }
                     ViewState.Status.ERROR -> {
-                        event.consumeEvent()
-                        binding.content.btnSave.isEnabled = true
-                        binding.content.progressBar.visibility = View.GONE
                         showErrorMessage(R.string.message_error_book_saved)
                     }
                 }
             }
         })
-    }
-
-    fun onMediaTypeChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        if (isChecked) {
-            if (buttonView === binding.content.rbMediaEbook) {
-                binding.content.book?.mediaType = MediaType.EBOOK
-            } else if (buttonView === binding.content.rbMediaPaper) {
-                binding.content.book?.mediaType = MediaType.PAPER
-            }
-        }
-    }
-
-    fun clickSaveBook(view: View) {
-        val book = binding.content.book
-        if (book != null) {
-            viewModel.saveBook(book)
-        }
     }
 
     fun clickTakePhoto(view: View) {
@@ -126,5 +100,6 @@ class BookFormFragment : BaseFragment() {
 
     companion object {
         private const val RC_CAMERA = 1
+        private const val TAG = "BookFormFragment"
     }
 }

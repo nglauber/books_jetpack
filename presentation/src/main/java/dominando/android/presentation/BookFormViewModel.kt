@@ -1,15 +1,11 @@
 package dominando.android.presentation
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dominando.android.domain.interactor.SaveBookUseCase
 import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
+import dominando.android.presentation.binding.MediaType
+import dominando.android.presentation.binding.Publisher
 import dominando.android.presentation.livedata.LiveEvent
 import java.io.File
 import java.lang.Exception
@@ -21,31 +17,59 @@ class BookFormViewModel(
     private val saveBookUseCase: SaveBookUseCase
 ) : ViewModel(), LifecycleObserver {
 
-    var book: BookBinding? = null
     var tempImageFile: File? = null
         set(value) {
             deleteTempPhoto()
             field = value
             shouldDeleteImage = true
         }
+
+    val publishers = listOf(
+            Publisher("1", "Novatec"),
+            Publisher("2", "Outra")
+    )
+
     private var shouldDeleteImage: Boolean = true
 
-    private val state: MutableLiveData<LiveEvent<ViewState<Unit>>> = MutableLiveData()
+    private val saveBookEvent: MutableLiveData<LiveEvent<ViewState<Unit>>> = MutableLiveData()
+    private val book = MutableLiveData<BookBinding>(BookBinding())
 
-    fun getState(): LiveData<LiveEvent<ViewState<Unit>>> = state
+    val state = Transformations.map(saveBookEvent) {
+        /* Retrieve data before call consumeEvent() */
+        val data = it.peekContent()
+        if (it.peekContent()?.status == ViewState.Status.ERROR) {
+            it.consumeEvent()
+        }
+        data
+    }
 
-    fun saveBook(book: BookBinding) {
-        state.postValue(LiveEvent(ViewState(ViewState.Status.LOADING)))
+    fun book(): LiveData<BookBinding> = book
+
+    fun saveBook() {
+        saveBookEvent.postValue(LiveEvent(ViewState(ViewState.Status.LOADING)))
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    saveBookUseCase.execute(BookConverter.toData(book))
+                    book.value?.let { saveBookUseCase.execute(BookConverter.toData(it)) }
                 }
                 shouldDeleteImage = false
-                state.postValue(LiveEvent(ViewState(ViewState.Status.SUCCESS)))
+                saveBookEvent.postValue(LiveEvent(ViewState(ViewState.Status.SUCCESS)))
             } catch (e: Exception) {
-                state.postValue(LiveEvent(ViewState(ViewState.Status.ERROR, error = e)))
+                saveBookEvent.postValue(LiveEvent(ViewState(ViewState.Status.ERROR, error = e)))
             }
+        }
+    }
+
+    /**
+     * This method should be called to edit book
+     */
+    fun setBook(book: BookBinding) {
+        this.book.value = book
+    }
+
+    fun onMediaTypeChanged(mediaType: MediaType, isChecked: Boolean) {
+        if (isChecked) {
+            book.value?.mediaType = mediaType
         }
     }
 

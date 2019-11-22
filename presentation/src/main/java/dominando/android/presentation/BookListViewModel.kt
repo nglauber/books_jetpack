@@ -1,12 +1,6 @@
 package dominando.android.presentation
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dominando.android.domain.interactor.ListBooksUseCase
 import dominando.android.domain.interactor.RemoveBookUseCase
 import dominando.android.presentation.binding.Book as BookBinding
@@ -22,19 +16,13 @@ import kotlinx.coroutines.withContext
 class BookListViewModel(
     private val loadBooksUseCase: ListBooksUseCase,
     private val removeBookUseCase: RemoveBookUseCase
-
 ) : ViewModel(), LifecycleObserver {
 
-    private val state: MutableLiveData<ViewState<List<BookBinding>>> = MutableLiveData()
-    private val removeOperation: MutableLiveData<LiveEvent<ViewState<Unit>>> = MutableLiveData()
+    private val state = MutableLiveData<ViewState<List<BookBinding>>>()
+    private val removeOperation = MutableLiveData<LiveEvent<ViewState<Unit>>>()
 
-    fun getState(): LiveData<ViewState<List<BookBinding>>> {
-        return state
-    }
-
-    fun removeOperation(): LiveData<LiveEvent<ViewState<Unit>>> {
-        return removeOperation
-    }
+    fun state(): LiveData<ViewState<List<BookBinding>>> = state
+    fun removeOperation(): LiveData<LiveEvent<ViewState<Unit>>> = removeOperation
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun loadBooks() {
