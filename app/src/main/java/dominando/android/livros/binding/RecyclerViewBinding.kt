@@ -11,10 +11,10 @@ object RecyclerViewBinding {
 
     @BindingAdapter("data")
     @JvmStatic
+    @Suppress("UNCHECKED_CAST")
     fun <T> setRecyclerViewProperties(recyclerView: RecyclerView, data: T?) {
         if (recyclerView.adapter is BindableAdapter<*>) {
             (recyclerView.adapter as BindableAdapter<T?>).setData(data)
         }
     }
-
 }

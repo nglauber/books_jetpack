@@ -12,7 +12,6 @@ import dominando.android.domain.interactor.ViewBookDetailsUseCase
 import dominando.android.presentation.BookDetailsViewModel
 import dominando.android.presentation.BookFormViewModel
 import dominando.android.presentation.BookListViewModel
-import dominando.android.presentation.binding.Book
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

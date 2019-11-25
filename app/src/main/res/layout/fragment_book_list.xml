@@ -8,10 +8,6 @@
         <variable
             name="viewModel"
             type="dominando.android.presentation.BookListViewModel" />
-
-        <variable
-            name="presenter"
-            type="dominando.android.livros.BookListFragment" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

@@ -1,6 +1,9 @@
 package dominando.android.presentation
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dominando.android.domain.interactor.ViewBookDetailsUseCase
 import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
@@ -12,8 +15,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 class BookDetailsViewModel(
-        private val bookId: String,
-        private val viewBookDetailsUseCase: ViewBookDetailsUseCase
+    private val bookId: String,
+    private val viewBookDetailsUseCase: ViewBookDetailsUseCase
 ) : ViewModel() {
 
     private val state: MutableLiveData<ViewState<BookBinding>> = MutableLiveData()

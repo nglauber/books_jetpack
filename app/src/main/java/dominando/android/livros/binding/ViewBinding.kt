@@ -14,5 +14,4 @@ object ViewBinding {
             view.visibility = View.GONE
         }
     }
-
 }

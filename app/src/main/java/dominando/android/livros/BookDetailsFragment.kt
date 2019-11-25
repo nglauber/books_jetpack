@@ -1,7 +1,12 @@
 package dominando.android.livros
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import dominando.android.livros.common.BaseFragment
 import dominando.android.livros.databinding.FragmentBookDetailsBinding
@@ -22,9 +27,9 @@ class BookDetailsFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         val binding = DataBindingUtil.inflate(
                 inflater,
@@ -33,7 +38,7 @@ class BookDetailsFragment : BaseFragment() {
 
         return binding.run {
             lifecycleOwner = this@BookDetailsFragment
-            viewModel      = this@BookDetailsFragment.viewModel
+            viewModel = this@BookDetailsFragment.viewModel
             root
         }
     }

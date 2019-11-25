@@ -9,9 +9,9 @@ import dominando.android.livros.binding.RecyclerViewBinding.BindableAdapter
 import dominando.android.livros.databinding.ItemBookBinding
 import dominando.android.presentation.binding.Book
 
-class BookAdapter(private val onClick: (Book) -> Unit)
-    : RecyclerView.Adapter<BookAdapter.ViewHolder>(),
-      BindableAdapter<List<Book>> {
+class BookAdapter(private val onClick: (Book) -> Unit) :
+    RecyclerView.Adapter<BookAdapter.ViewHolder>(),
+    BindableAdapter<List<Book>> {
 
     private var books: List<Book>? = null
 

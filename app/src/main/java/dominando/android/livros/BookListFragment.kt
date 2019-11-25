@@ -1,7 +1,12 @@
 package dominando.android.livros
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -18,7 +23,7 @@ import org.koin.android.ext.android.inject
 class BookListFragment : BaseFragment() {
     private val viewModel: BookListViewModel by inject()
 
-    private lateinit var rvBooks : RecyclerView
+    private lateinit var rvBooks: RecyclerView
 
     private val bookAdapter by lazy {
         BookAdapter { book ->
@@ -44,7 +49,7 @@ class BookListFragment : BaseFragment() {
 
         return binding.run {
             lifecycleOwner = this@BookListFragment
-            viewModel      = this@BookListFragment.viewModel
+            viewModel = this@BookListFragment.viewModel
 
             /* Init UI */
             initRecyclerView(rvBooks)

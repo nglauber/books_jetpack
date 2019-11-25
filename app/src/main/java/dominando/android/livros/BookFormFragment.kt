@@ -28,9 +28,9 @@ class BookFormFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         val binding = DataBindingUtil.inflate(
                 inflater,
@@ -38,13 +38,12 @@ class BookFormFragment : BaseFragment() {
                 container, false) as FragmentBookFormBinding
 
         return binding.run {
-            lifecycleOwner    = this@BookFormFragment
+            lifecycleOwner = this@BookFormFragment
             content.presenter = this@BookFormFragment
             content.viewModel = this@BookFormFragment.viewModel
             root
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
