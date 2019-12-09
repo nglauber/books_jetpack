@@ -18,6 +18,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -75,51 +76,52 @@ class FbRepository : BooksRepository {
     }
 
     override fun loadBooks(): Flow<List<Book>> {
-        val observerChannel = Channel<List<Book>>(Channel.CONFLATED)
-
-        val currentUser = fbAuth.currentUser
-        firestore.collection(BOOKS_KEY)
-                .whereEqualTo(USER_ID_KEY, currentUser?.uid)
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        observerChannel.close(e)
-                        return@addSnapshotListener
-                    }
-
-                    if (snapshot != null && !snapshot.isEmpty) {
-                        val books = snapshot.map { document ->
-                            document.toObject(Book::class.java)
+        return channelFlow {
+            val currentUser = fbAuth.currentUser
+            val subscription = firestore.collection(BOOKS_KEY)
+                    .whereEqualTo(USER_ID_KEY, currentUser?.uid)
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            channel.close(e)
+                            return@addSnapshotListener
                         }
-                        books.let {
-                            observerChannel.offer(it)
+
+                        if (snapshot != null && !snapshot.isEmpty) {
+                            val books = snapshot.map { document ->
+                                document.toObject(Book::class.java)
+                            }
+                            books.let {
+                               channel.offer(it)
+                            }
+                        } else {
+                            channel.offer(emptyList())
                         }
-                    } else {
-                        observerChannel.offer(emptyList())
                     }
-                }
-        return observerChannel.consumeAsFlow()
+            awaitClose {
+                subscription.remove()
+            }
+        }
     }
 
     override fun loadBook(bookId: String): Flow<Book?> {
-        val observerChannel = Channel<Book?>(Channel.CONFLATED)
-
         return channelFlow {
-            firestore.collection(BOOKS_KEY)
+            val subscription = firestore.collection(BOOKS_KEY)
                     .document(bookId)
                     .addSnapshotListener { snapshot, e ->
                         if (e != null) {
-                            observerChannel.close(e)
+                            channel.close(e)
                             return@addSnapshotListener
                         }
                         if (snapshot != null && !snapshot.exists()) {
                             val book = snapshot.toObject(Book::class.java)
                             book?.let {
-                                observerChannel.offer(it)
+                                channel.offer(it)
                             }
                         } else {
-                            observerChannel.offer(null)
+                            channel.offer(null)
                         }
                     }
+            awaitClose { subscription.remove() }
         }
     }
 
