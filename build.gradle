@@ -1,8 +1,8 @@
 buildscript {
     ext {
-        compile_sdk_version = 28
+        compile_sdk_version = 29
         min_sdk_version = 21
-        target_sdk_version = 28
+        target_sdk_version = 29
         version_code = 1
 
         appcompat_version = '1.1.0'
@@ -15,16 +15,17 @@ buildscript {
         espresso_version = '3.2.0'
         fabric_version = '1.29.0'
         firebase_core_version = '17.2.1'
-        firebase_auth_version = '19.1.0'
+        firebase_auth_version = '19.2.0'
         firebase_firestore_version = '21.3.0'
         firebase_storage_version = '19.1.0'
+        fragment_ktx_version = '1.2.0-rc03'
         google_services_version = '4.2.0'
         gradle_version = '3.5.3'
         hamcrest_version = "1.3"
         junit_version = '4.12'
         koin_version = '2.0.1'
-        kotlin_version = '1.3.50'
-        lifecycle_version = '2.2.0-rc02'
+        kotlin_version = '1.3.61'
+        lifecycle_version = '2.2.0-rc03'
         material_design_version = '1.0.0'
         mockito_core_version = '2.28.2'
         mockito_kotlin_version = '2.1.0'
@@ -32,8 +33,8 @@ buildscript {
         nav_version = '2.1.0'
         picasso_version = '2.71828'
         playservices_version = '17.0.0'
-        recylerview_version = '1.0.0'
-        room_version = "2.2.1"
+        recylerview_version = '1.1.0'
+        room_version = "2.2.2"
         testrules_version = "1.2.0"
         testrunner_version = '1.1.1'
     }
