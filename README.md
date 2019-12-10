@@ -19,6 +19,10 @@ Finally, this module is also using [Data Binding](https://developer.android.com/
 * __Data Remote__ - contains a implementation of a remote data source using [Firebase Cloud Firestore](https://firebase.google.com/docs/firestore). The book's cover are stored in the [Firebase Cloud Storage](https://firebase.google.com/docs/storage).
 * __Data Local__ - contains a implementation of a local data source [Room library](https://developer.android.com/topic/libraries/architecture/room). The book's cover are stored in the local file system.
 
+The architecture flow is displayed below:<p/>
+<img src="./docs/imgs/app_arch.png" width="600"/><br/>
+(*Source: [Lessons learnt using Coroutines Flow](https://medium.com/androiddevelopers/lessons-learnt-using-coroutines-flow-4a6b285c0d06) article by [Manuel Vivo](https://twitter.com/manuelvicnt)*)
+
 ## Screenshots
 ### Books List
 This screen displays all books saved on the repository (local or remote).
