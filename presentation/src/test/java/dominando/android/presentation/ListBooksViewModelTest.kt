@@ -46,7 +46,7 @@ class ListBooksViewModelTest {
 
         coVerify(exactly = 1) { listBooksUseCase.execute() }
 
-        val currentState = bookListViewModel.getState().value
+        val currentState = bookListViewModel.state().value
         assertEquals(
                 ViewState.Status.SUCCESS,
                 currentState?.status)
@@ -59,13 +59,14 @@ class ListBooksViewModelTest {
     fun fetchBookReturnsData() = testCoroutineRule.runBlockingTest {
         val bookList = DataFactory.dummyBookList()
         initMocks(bookList)
+
         bookListViewModel.loadBooks()
 
         coVerify(exactly = 1) { listBooksUseCase.execute() }
 
         assertEquals(
                 bookList.map { BookConverter.fromData(it) },
-                bookListViewModel.getState().value?.data
+                bookListViewModel.state().value?.data
         )
     }
 
@@ -92,7 +93,7 @@ class ListBooksViewModelTest {
 
         assertEquals(
                 ViewState.Status.SUCCESS,
-                bookListViewModel.removeOperation().value?.peekContent()?.status
+                bookListViewModel.removeOperation().value?.status
         )
     }
 

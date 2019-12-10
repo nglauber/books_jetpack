@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import dominando.android.livros.common.BaseFragment
+import dominando.android.livros.common.Constants.EXTRA_BOOK
 import dominando.android.livros.databinding.FragmentBookDetailsBinding
 import dominando.android.presentation.BookDetailsViewModel
 import dominando.android.presentation.binding.Book
@@ -18,7 +19,7 @@ import org.koin.core.parameter.parametersOf
 class BookDetailsFragment : BaseFragment() {
 
     private val viewModel: BookDetailsViewModel by inject {
-        parametersOf(arguments?.getParcelable<Book>("book")?.id)
+        parametersOf(arguments?.getParcelable<Book>(EXTRA_BOOK)?.id)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

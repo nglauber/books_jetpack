@@ -5,7 +5,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dominando.android.domain.interactor.SaveBookUseCase
@@ -13,7 +12,7 @@ import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
 import dominando.android.presentation.binding.MediaType
 import dominando.android.presentation.binding.Publisher
-import dominando.android.presentation.livedata.LiveEvent
+import dominando.android.presentation.livedata.SingleLiveEvent
 import java.io.File
 import java.lang.Exception
 import kotlinx.coroutines.Dispatchers
@@ -38,33 +37,28 @@ class BookFormViewModel(
 
     private var shouldDeleteImage: Boolean = true
 
-    private val saveBookEvent: MutableLiveData<LiveEvent<ViewState<Unit>>> = MutableLiveData()
+    private val saveBookEvent = SingleLiveEvent<ViewState<Unit>>()
     private val book = MutableLiveData<BookBinding>(BookBinding())
 
-    val state = Transformations.map(saveBookEvent) {
-        /* Retrieve data before call consumeEvent() */
-        val data = it.peekContent()
-        if (it.peekContent()?.status == ViewState.Status.ERROR) {
-            it.consumeEvent()
-        }
-        data
-    }
-
+    fun state(): LiveData<ViewState<Unit>> = saveBookEvent
     fun book(): LiveData<BookBinding> = book
 
     fun saveBook() {
-        saveBookEvent.postValue(LiveEvent(ViewState(ViewState.Status.LOADING)))
-        viewModelScope.launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    book.value?.let { saveBookUseCase.execute(BookConverter.toData(it)) }
+        book.value?.let {
+            saveBookEvent.postValue(ViewState(ViewState.Status.LOADING))
+            viewModelScope.launch {
+                try {
+                    withContext(Dispatchers.IO) {
+                        saveBookUseCase.execute(BookConverter.toData(it))
+                    }
+                    shouldDeleteImage = false
+                    saveBookEvent.postValue(ViewState(ViewState.Status.SUCCESS))
+                } catch (e: Exception) {
+                    saveBookEvent.postValue(ViewState(ViewState.Status.ERROR, error = e))
                 }
-                shouldDeleteImage = false
-                saveBookEvent.postValue(LiveEvent(ViewState(ViewState.Status.SUCCESS)))
-            } catch (e: Exception) {
-                saveBookEvent.postValue(LiveEvent(ViewState(ViewState.Status.ERROR, error = e)))
             }
-        }
+        } ?: saveBookEvent.postValue(ViewState(ViewState.Status.ERROR,
+                error = IllegalArgumentException("Book is null")))
     }
 
     /**

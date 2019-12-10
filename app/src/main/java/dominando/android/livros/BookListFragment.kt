@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dominando.android.livros.common.BaseFragment
 import dominando.android.livros.databinding.FragmentBookListBinding
@@ -22,8 +21,7 @@ import org.koin.android.ext.android.inject
 
 class BookListFragment : BaseFragment() {
     private val viewModel: BookListViewModel by inject()
-
-    private lateinit var rvBooks: RecyclerView
+    private lateinit var dataBinding: FragmentBookListBinding
 
     private val bookAdapter by lazy {
         BookAdapter { book ->
@@ -47,16 +45,15 @@ class BookListFragment : BaseFragment() {
                 container,
                 false) as FragmentBookListBinding
 
-        return binding.run {
+        dataBinding = binding.apply {
             lifecycleOwner = this@BookListFragment
             viewModel = this@BookListFragment.viewModel
 
             /* Init UI */
-            initRecyclerView(rvBooks)
-            initFab(fabAdd)
-
-            root
+            initRecyclerView()
+            initFab()
         }
+        return dataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -88,29 +85,27 @@ class BookListFragment : BaseFragment() {
             }
         })
         viewModel.removeOperation().observe(viewLifecycleOwner, Observer { event ->
-            event.consumeEvent()?.let { viewState ->
-                when (viewState.status) {
-                    ViewState.Status.SUCCESS -> {
-                        Snackbar.make(rvBooks, R.string.message_book_removed, Snackbar.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(),
-                                R.string.message_error_delete_book, Toast.LENGTH_SHORT).show()
-                    }
+            when (event.status) {
+                ViewState.Status.SUCCESS -> {
+                    Snackbar.make(dataBinding.rvBooks, R.string.message_book_removed,
+                            Snackbar.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(requireContext(),
+                            R.string.message_error_delete_book, Toast.LENGTH_SHORT).show()
                 }
             }
         })
         lifecycle.addObserver(viewModel)
     }
 
-    private fun initRecyclerView(recyclerView: RecyclerView) {
-        rvBooks = recyclerView
-        recyclerView.adapter = bookAdapter
+    private fun initRecyclerView() {
+        dataBinding.rvBooks.adapter = bookAdapter
         attachSwipeToRecyclerView()
     }
 
-    private fun initFab(fab: FloatingActionButton) {
-        fab.setOnClickListener {
+    private fun initFab() {
+        dataBinding.fabAdd.setOnClickListener {
             router.showBookForm(null)
         }
     }
@@ -136,7 +131,7 @@ class BookListFragment : BaseFragment() {
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipe)
-        itemTouchHelper.attachToRecyclerView(rvBooks)
+        itemTouchHelper.attachToRecyclerView(dataBinding.rvBooks)
     }
 
     private fun deleteBookFromPosition(position: Int) {

@@ -1,5 +1,6 @@
 package dominando.android.presentation
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,8 @@ class BookDetailsViewModel(
     val book = Transformations.map(state) { it.data }
 
     init { loadBook() }
+
+    fun getState(): LiveData<ViewState<BookBinding>> = state
 
     fun loadBook() {
         viewModelScope.launch {

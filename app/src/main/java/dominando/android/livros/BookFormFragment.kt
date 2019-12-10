@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import dominando.android.livros.common.BaseFragment
+import dominando.android.livros.common.Constants.EXTRA_BOOK
 import dominando.android.livros.common.FilePicker
 import dominando.android.livros.databinding.FragmentBookFormBinding
 import dominando.android.presentation.BookFormViewModel
@@ -47,7 +48,7 @@ class BookFormFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.getParcelable<Book>("book")?.let {
+        arguments?.getParcelable<Book>(EXTRA_BOOK)?.let {
             viewModel.setBook(it)
         }
         lifecycle.addObserver(viewModel)
@@ -62,7 +63,7 @@ class BookFormFragment : BaseFragment() {
     }
 
     private fun init() {
-        viewModel.state.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.state().observe(viewLifecycleOwner, Observer { event ->
             event?.let { state ->
                 when (state.status) {
                     ViewState.Status.LOADING -> Log.d(TAG, "Process is loading")
