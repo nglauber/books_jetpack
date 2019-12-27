@@ -39,13 +39,13 @@ class BookListFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = DataBindingUtil.inflate(
+        dataBinding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_book_list,
                 container,
                 false) as FragmentBookListBinding
 
-        dataBinding = binding.apply {
+        dataBinding.run {
             lifecycleOwner = this@BookListFragment
             viewModel = this@BookListFragment.viewModel
 

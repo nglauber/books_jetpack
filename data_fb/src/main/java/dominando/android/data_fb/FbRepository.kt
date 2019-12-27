@@ -112,7 +112,7 @@ class FbRepository : BooksRepository {
                             channel.close(e)
                             return@addSnapshotListener
                         }
-                        if (snapshot != null && !snapshot.exists()) {
+                        if (snapshot != null && snapshot.exists()) {
                             val book = snapshot.toObject(Book::class.java)
                             book?.let {
                                 channel.offer(it)
