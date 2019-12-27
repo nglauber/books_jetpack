@@ -14,6 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 
 class DetailViewModelTest {
+
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -21,12 +22,11 @@ class DetailViewModelTest {
     val testCoroutineRule = TestCoroutineRule()
 
     private var viewBookDetailsUseCase = mockk<ViewBookDetailsUseCase>()
-    private var bookDetailsViewModel = BookDetailsViewModel(viewBookDetailsUseCase)
 
     @Test
     fun fetchBookDetailsExecutesUseCase() {
         val bookId = "1"
-        bookDetailsViewModel.loadBook(bookId)
+        BookDetailsViewModel(bookId, viewBookDetailsUseCase)
         verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
     }
 
@@ -35,7 +35,7 @@ class DetailViewModelTest {
         val book = DataFactory.dummyBook()
         initMock(book)
         val bookId = book.id
-        bookDetailsViewModel.loadBook(bookId)
+        val bookDetailsViewModel = BookDetailsViewModel(bookId, viewBookDetailsUseCase)
 
         verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
 
@@ -49,7 +49,7 @@ class DetailViewModelTest {
         val book = DataFactory.dummyBook()
         initMock(book)
         val bookId = book.id
-        bookDetailsViewModel.loadBook(bookId)
+        val bookDetailsViewModel = BookDetailsViewModel(bookId, viewBookDetailsUseCase)
 
         verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
 
@@ -64,7 +64,7 @@ class DetailViewModelTest {
     fun fetchBookReturnsError() {
         val book = DataFactory.dummyBook()
         val bookId = book.id
-        bookDetailsViewModel.loadBook(bookId)
+        val bookDetailsViewModel = BookDetailsViewModel(bookId, viewBookDetailsUseCase)
 
         verify(exactly = 1) { viewBookDetailsUseCase.execute(eq(bookId)) }
 

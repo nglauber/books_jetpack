@@ -1,7 +1,6 @@
 package dominando.android.presentation.di
 
 import dominando.android.data.BooksRepository
-import dominando.android.data_fb.FbRepository
 import dominando.android.data_room.LocalFileHelper
 import dominando.android.data_room.RoomRepository
 import dominando.android.data_room.database.AppDatabase
@@ -19,7 +18,7 @@ val presentationModule = module {
 
     single {
         RoomRepository(AppDatabase.getDatabase(context = get()), LocalFileHelper()) as BooksRepository
-        //FbRepository() as BooksRepository
+        // FbRepository() as BooksRepository
     }
 
     factory {
@@ -43,7 +42,7 @@ val presentationModule = module {
     }
 
     viewModel {
-        BookDetailsViewModel(viewBookDetailsUseCase = get())
+        (bookId: String) -> BookDetailsViewModel(bookId, viewBookDetailsUseCase = get())
     }
 
     viewModel {

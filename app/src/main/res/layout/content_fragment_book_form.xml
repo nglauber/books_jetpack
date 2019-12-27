@@ -3,22 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
-        <import type="java.util.List" />
-
+        <import type="dominando.android.presentation.ViewState" />
         <import type="dominando.android.presentation.binding.MediaType" />
 
         <variable
-            name="book"
-            type="dominando.android.presentation.binding.Book" />
+            name="viewModel"
+            type="dominando.android.presentation.BookFormViewModel" />
 
         <variable
             name="presenter"
             type="dominando.android.livros.BookFormFragment" />
 
-        <variable
-            name="publishers"
-            type="java.util.List&lt;dominando.android.presentation.binding.Publisher&gt;" />
     </data>
 
     <LinearLayout
@@ -35,7 +30,7 @@
             android:background="@android:color/darker_gray"
             android:onClick="@{presenter::clickTakePhoto}"
             android:scaleType="centerInside"
-            app:imageUrl="@{book.coverUrl}" />
+            app:imageUrl="@{viewModel.book.coverUrl}" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -48,7 +43,7 @@
                 android:hint="@string/text_book_title"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
-                android:text="@={book.title}" />
+                android:text="@={viewModel.book.title}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -62,7 +57,7 @@
                 android:hint="@string/text_book_author"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
-                android:text="@={book.author}" />
+                android:text="@={viewModel.book.author}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -77,7 +72,7 @@
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 android:maxLength="4"
-                android:text="@={book.pages}" />
+                android:text="@={viewModel.book.pages}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -92,23 +87,23 @@
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 android:maxLength="4"
-                android:text="@={book.year}" />
+                android:text="@={viewModel.book.year}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spnPublisher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@{publishers}"
-            android:onItemSelected="@{(p, v, pos, id)->book.setPublisher(publishers[pos])}"
-            android:selection="@{publishers.indexOf(book.publisher)}"
+            android:entries="@{viewModel.publishers}"
+            android:onItemSelected="@{(p, v, pos, id) -> viewModel.book.setPublisher(viewModel.publishers[pos])}"
+            android:selection="@{viewModel.publishers.indexOf(viewModel.book.publisher)}"
             android:spinnerMode="dialog" />
 
         <CheckBox
             android:id="@+id/chkAvailable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="@={book.available}"
+            android:checked="@={viewModel.book.available}"
             android:text="@string/text_book_available" />
 
         <RadioGroup
@@ -122,16 +117,16 @@
                 android:id="@+id/rbMediaPaper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@{book.mediaType == MediaType.PAPER}"
-                android:onCheckedChanged="@{presenter::onMediaTypeChanged}"
+                android:checked="@{viewModel.book.mediaType == MediaType.PAPER}"
+                android:onCheckedChanged="@{(button, isChecked) -> viewModel.onMediaTypeChanged(MediaType.PAPER, isChecked)}"
                 android:text="@string/text_book_media_paper" />
 
             <RadioButton
                 android:id="@+id/rbMediaEbook"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@{book.mediaType == MediaType.EBOOK}"
-                android:onCheckedChanged="@{presenter::onMediaTypeChanged}"
+                android:checked="@{viewModel.book.mediaType == MediaType.EBOOK}"
+                android:onCheckedChanged="@{(button, isChecked) -> viewModel.onMediaTypeChanged(MediaType.EBOOK, isChecked)}"
                 android:text="@string/text_book_media_ebook" />
         </RadioGroup>
 
@@ -140,20 +135,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:rating="@={book.rating}" />
+            android:rating="@={viewModel.book.rating}" />
 
         <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{presenter::clickSaveBook}"
-            android:text="@string/button_save" />
+            android:onClick="@{() -> viewModel.saveBook()}"
+            android:text="@string/button_save"
+            app:isVisible="@{viewModel.state().status != ViewState.Status.LOADING}"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            isVisible="@{viewModel.state().status == ViewState.Status.LOADING}" />
     </LinearLayout>
 </layout>

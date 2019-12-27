@@ -7,8 +7,8 @@ import com.squareup.picasso.Picasso
 object ImageBinding {
     @JvmStatic
     @BindingAdapter("app:imageUrl")
-    fun setImageUrl(imageView: ImageView, url: String) {
-        if (url.isNotEmpty()) {
+    fun setImageUrl(imageView: ImageView, url: String?) {
+        if (url != null && url.isNotEmpty()) {
             Picasso.get()
                     .load(url)
                     .fit()

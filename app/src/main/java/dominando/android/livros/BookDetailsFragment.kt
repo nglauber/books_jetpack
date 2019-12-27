@@ -8,51 +8,39 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import dominando.android.livros.common.BaseFragment
+import dominando.android.livros.common.Constants.EXTRA_BOOK
 import dominando.android.livros.databinding.FragmentBookDetailsBinding
 import dominando.android.presentation.BookDetailsViewModel
-import dominando.android.presentation.ViewState
 import dominando.android.presentation.binding.Book
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 class BookDetailsFragment : BaseFragment() {
-    private val viewModel: BookDetailsViewModel by inject()
 
-    private lateinit var binding: FragmentBookDetailsBinding
+    private val viewModel: BookDetailsViewModel by inject {
+        parametersOf(arguments?.getParcelable<Book>(EXTRA_BOOK)?.id)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_book_details, container, false
-        )
-        return binding.root
-    }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val binding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_book_details,
+                container, false) as FragmentBookDetailsBinding
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val book = arguments?.getParcelable<Book>("book")
-        if (book != null) {
-            binding.book = book
-        }
-        init()
-    }
-
-    private fun init() {
-        viewModel.getState().observe(viewLifecycleOwner, Observer { viewState ->
-            when (viewState.status) {
-                ViewState.Status.SUCCESS -> binding.book = viewState.data
-                ViewState.Status.LOADING -> {} /* TODO */
-                ViewState.Status.ERROR -> {} /* TODO */
-            }
-        })
-        val book = arguments?.getParcelable<Book>("book")
-        book?.let {
-            viewModel.loadBook(book.id)
+        return binding.run {
+            lifecycleOwner = this@BookDetailsFragment
+            viewModel = this@BookDetailsFragment.viewModel
+            root
         }
     }
 
@@ -63,7 +51,7 @@ class BookDetailsFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_edit_book) {
-            binding.book?.let {
+            viewModel.book.value?.let {
                 router.showBookForm(it)
             }
             return true

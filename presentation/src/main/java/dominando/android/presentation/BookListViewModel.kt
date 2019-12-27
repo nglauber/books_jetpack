@@ -11,8 +11,7 @@ import dominando.android.domain.interactor.ListBooksUseCase
 import dominando.android.domain.interactor.RemoveBookUseCase
 import dominando.android.presentation.binding.Book as BookBinding
 import dominando.android.presentation.binding.BookConverter
-import dominando.android.presentation.livedata.LiveEvent
-import java.lang.Exception
+import dominando.android.presentation.livedata.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
@@ -22,19 +21,13 @@ import kotlinx.coroutines.withContext
 class BookListViewModel(
     private val loadBooksUseCase: ListBooksUseCase,
     private val removeBookUseCase: RemoveBookUseCase
-
 ) : ViewModel(), LifecycleObserver {
 
-    private val state: MutableLiveData<ViewState<List<BookBinding>>> = MutableLiveData()
-    private val removeOperation: MutableLiveData<LiveEvent<ViewState<Unit>>> = MutableLiveData()
+    private val state = MutableLiveData<ViewState<List<BookBinding>>>()
+    private val removeOperation = SingleLiveEvent<ViewState<Unit>>()
 
-    fun getState(): LiveData<ViewState<List<BookBinding>>> {
-        return state
-    }
-
-    fun removeOperation(): LiveData<LiveEvent<ViewState<Unit>>> {
-        return removeOperation
-    }
+    fun state(): LiveData<ViewState<List<BookBinding>>> = state
+    fun removeOperation(): LiveData<ViewState<Unit>> = removeOperation
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun loadBooks() {
@@ -62,9 +55,9 @@ class BookListViewModel(
                 withContext(Dispatchers.IO) {
                     removeBookUseCase.execute(book)
                 }
-                removeOperation.postValue(LiveEvent(ViewState(ViewState.Status.SUCCESS)))
+                removeOperation.postValue(ViewState(ViewState.Status.SUCCESS))
             } catch (e: Exception) {
-                removeOperation.postValue(LiveEvent(ViewState(ViewState.Status.ERROR, error = e)))
+                removeOperation.postValue(ViewState(ViewState.Status.ERROR, error = e))
             }
         }
     }
