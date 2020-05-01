@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <import type="dominando.android.presentation.ViewState" />
+
         <import type="dominando.android.presentation.binding.MediaType" />
 
         <variable
@@ -28,6 +30,7 @@
             android:layout_height="144dp"
             android:layout_marginBottom="16dp"
             android:background="@android:color/darker_gray"
+            android:contentDescription="@string/cont_desc_book_cover"
             android:onClick="@{presenter::clickTakePhoto}"
             android:scaleType="centerInside"
             app:imageUrl="@{viewModel.book.coverUrl}" />
@@ -143,13 +146,13 @@
             android:layout_height="wrap_content"
             android:onClick="@{() -> viewModel.saveBook()}"
             android:text="@string/button_save"
-            app:isVisible="@{viewModel.state().status != ViewState.Status.LOADING}"/>
+            app:isVisible="@{viewModel.state().status != ViewState.Status.LOADING}" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleSmall"
+            isVisible="@{viewModel.state().status == ViewState.Status.LOADING}"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            isVisible="@{viewModel.state().status == ViewState.Status.LOADING}" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </layout>

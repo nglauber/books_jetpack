@@ -17,11 +17,9 @@ import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.consumeAsFlow
 
 class FbRepository : BooksRepository {
     private val fbAuth = FirebaseAuth.getInstance()
@@ -91,10 +89,10 @@ class FbRepository : BooksRepository {
                                 document.toObject(Book::class.java)
                             }
                             books.let {
-                               channel.offer(it)
+                                channel.offer(it)
                             }
                         } else {
-                            channel.offer(emptyList())
+                            channel.offer(emptyList<Book>())
                         }
                     }
             awaitClose {

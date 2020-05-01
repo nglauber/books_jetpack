@@ -9,32 +9,33 @@ buildscript {
         android_arch_test = "2.0.1"
         core_testing_version = '2.0.0'
         core_runtime_version = '2.0.1'
-        coroutines_version = '1.3.1'
+        coroutines_version = '1.3.5'
         constraintlayout_version = '1.1.3'
         crashlytics_version = '2.10.1'
         espresso_version = '3.2.0'
-        fabric_version = '1.29.0'
-        firebase_core_version = '17.2.1'
-        firebase_auth_version = '19.2.0'
-        firebase_firestore_version = '21.3.0'
-        firebase_storage_version = '19.1.0'
-        fragment_ktx_version = '1.2.0-rc03'
-        google_services_version = '4.2.0'
+        firebase_auth_version = '19.3.1'
+        firebase_core_version = '17.4.0'
+        firebase_crashlytics_version = '17.0.0'
+        firebase_crashlytics_gradle_version = '2.0.0'
+        firebase_firestore_version = '21.4.3'
+        firebase_storage_version = '19.1.1'
+        fragment_ktx_version = '1.3.0-alpha04'
+        google_services_version = '4.3.3'
         gradle_version = '3.5.3'
         hamcrest_version = "1.3"
         junit_version = '4.12'
-        koin_version = '2.0.1'
-        kotlin_version = '1.3.61'
-        lifecycle_version = '2.2.0-rc03'
-        material_design_version = '1.0.0'
+        koin_version = '2.1.5'
+        kotlin_version = '1.3.72'
+        lifecycle_version = '2.2.0'
+        material_design_version = '1.1.0'
         mockito_core_version = '2.28.2'
         mockito_kotlin_version = '2.1.0'
         mockk_version = '1.9.3'
-        nav_version = '2.1.0'
+        nav_version = '2.2.2'
         picasso_version = '2.71828'
-        playservices_version = '17.0.0'
+        playservices_version = '18.0.0'
         recylerview_version = '1.1.0'
-        room_version = "2.2.2"
+        room_version = "2.2.5"
         testrules_version = "1.2.0"
         testrunner_version = '1.1.1'
     }
@@ -42,15 +43,12 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven {
-            url 'https://maven.fabric.io/public'
-        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.google.gms:google-services:$google_services_version"
-        classpath "io.fabric.tools:gradle:$fabric_version"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.0.0'
     }
 }
 

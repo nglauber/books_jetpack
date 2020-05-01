@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
 apply plugin: 'project-report'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -57,6 +57,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$recylerview_version"
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
     implementation "com.google.firebase:firebase-auth:$firebase_auth_version"
+    implementation "com.google.firebase:firebase-crashlytics:$firebase_crashlytics_version"
     implementation "com.google.android.gms:play-services-auth:$playservices_version"
     implementation "com.google.android.material:material:$material_design_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"

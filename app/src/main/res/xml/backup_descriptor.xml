@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude
+        domain="sharedpref"
+        path="com.google.android.gms.appid.xml" />
+    <exclude
+        domain="sharedpref"
+        path="com.google.android.gms.measurement.prefs.xml" />
+</full-backup-content>

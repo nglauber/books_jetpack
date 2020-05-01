@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="dominando.android.presentation.BookDetailsViewModel" />
@@ -26,6 +27,7 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:background="#CCC"
+                android:contentDescription="@string/cont_desc_book_cover"
                 android:scaleType="centerInside"
                 app:imageUrl="@{viewModel.book.coverUrl}" />
 
