@@ -19,7 +19,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.callbackFlow
 
 class FbRepository : BooksRepository {
     private val fbAuth = FirebaseAuth.getInstance()
@@ -74,13 +74,13 @@ class FbRepository : BooksRepository {
     }
 
     override fun loadBooks(): Flow<List<Book>> {
-        return channelFlow {
+        return callbackFlow {
             val currentUser = fbAuth.currentUser
             val subscription = firestore.collection(BOOKS_KEY)
                     .whereEqualTo(USER_ID_KEY, currentUser?.uid)
                     .addSnapshotListener { snapshot, e ->
                         if (e != null) {
-                            channel.close(e)
+                            close(e)
                             return@addSnapshotListener
                         }
 
@@ -89,10 +89,10 @@ class FbRepository : BooksRepository {
                                 document.toObject(Book::class.java)
                             }
                             books.let {
-                                channel.offer(it)
+                                offer(it)
                             }
                         } else {
-                            channel.offer(emptyList<Book>())
+                            offer(emptyList<Book>())
                         }
                     }
             awaitClose {
@@ -102,21 +102,21 @@ class FbRepository : BooksRepository {
     }
 
     override fun loadBook(bookId: String): Flow<Book?> {
-        return channelFlow {
+        return callbackFlow {
             val subscription = firestore.collection(BOOKS_KEY)
                     .document(bookId)
                     .addSnapshotListener { snapshot, e ->
                         if (e != null) {
-                            channel.close(e)
+                            close(e)
                             return@addSnapshotListener
                         }
                         if (snapshot != null && snapshot.exists()) {
                             val book = snapshot.toObject(Book::class.java)
                             book?.let {
-                                channel.offer(it)
+                                offer(it)
                             }
                         } else {
-                            channel.offer(null)
+                            offer(null)
                         }
                     }
             awaitClose { subscription.remove() }
