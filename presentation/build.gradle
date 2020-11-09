@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply from: "$rootProject.projectDir/commons.gradle"
 
 android {
     compileSdkVersion compile_sdk_version
@@ -30,16 +31,11 @@ android {
 
 dependencies {
     implementation project(":domain")
-    implementation project(":data")
-    implementation project(":data_room")
-    implementation project(":data_fb")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
-    implementation "org.koin:koin-core:$koin_version"
-    implementation "org.koin:koin-android:$koin_version"
     implementation "org.koin:koin-android-viewmodel:$koin_version"
 
     testImplementation "junit:junit:$junit_version"

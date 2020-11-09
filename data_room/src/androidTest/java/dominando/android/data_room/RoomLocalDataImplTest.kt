@@ -4,10 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import dominando.android.data.model.Book
-import dominando.android.data.model.MediaType
-import dominando.android.data.model.Publisher
+import dominando.android.data.model.BookData
+import dominando.android.data.model.MediaTypeData
+import dominando.android.data.model.PublisherData
 import dominando.android.data_room.database.AppDatabase
+import dominando.android.data_room.filehelper.LocalFileHelper
 import java.io.File
 import java.util.UUID
 import kotlinx.coroutines.flow.first
@@ -20,29 +21,31 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class RoomRepositoryTest {
+class RoomLocalDataImplTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var repo: RoomRepository
-    private lateinit var dummyBook: Book
+    private lateinit var repo: RoomLocalDataImpl
+    private lateinit var dummyBook: BookData
+
+    private val context = InstrumentationRegistry.getInstrumentation().context
+    private val database = AppDatabase::class.java
 
     @Before
     fun initDb() {
-        val db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().context,
-                AppDatabase::class.java).build()
-        repo = RoomRepository(db, LocalFileHelper())
-        dummyBook = Book().apply {
+        val db = Room.inMemoryDatabaseBuilder(context, database).build()
+        repo = RoomLocalDataImpl(db, LocalFileHelper())
+        dummyBook = BookData().apply {
             id = UUID.randomUUID().toString()
             title = "Dominando o Android"
             author = "Nelson Glauber"
             available = true
             coverUrl = ""
             pages = 954
-            publisher = dominando.android.data.model.Publisher(UUID.randomUUID().toString(), "Novatec")
+            publisher = PublisherData(UUID.randomUUID().toString(), "Novatec")
             year = 2018
-            mediaType = dominando.android.data.model.MediaType.EBOOK
+            mediaType = MediaTypeData.EBOOK
             rating = 5f
         }
     }
@@ -115,16 +118,16 @@ class RoomRepositoryTest {
         Assert.assertFalse(cover.exists())
     }
 
-    private fun newBook(bookId: String) = Book().apply {
+    private fun newBook(bookId: String) = BookData().apply {
         id = bookId
         title = "Novo"
         author = "Nilson"
         coverUrl = ""
         pages = 1000
         year = 2016
-        publisher = Publisher(UUID.randomUUID().toString(), "Test")
+        publisher = PublisherData(UUID.randomUUID().toString(), "Test")
         available = false
-        mediaType = MediaType.PAPER
+        mediaType = MediaTypeData.PAPER
         rating = 2.5f
     }
 }

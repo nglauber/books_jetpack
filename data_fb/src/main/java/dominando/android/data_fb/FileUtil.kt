@@ -1,13 +1,14 @@
 package dominando.android.data_fb
 
-import dominando.android.data.model.Book
+import dominando.android.data.model.BookData
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 
-object FileUtil {
-    fun pathFromBook(book: Book): String {
+internal object FileUtil {
+
+    fun pathFromBook(book: BookData): String {
         return "/data/data/dominando.android.livros/files/${book.id}.jpg"
     }
     @Throws(IOException::class)

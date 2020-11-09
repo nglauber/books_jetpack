@@ -1,4 +1,4 @@
-package dominando.android.data.model
+package dominando.android.domain.entity
 
 data class Book(
     var id: String = "",

@@ -6,15 +6,20 @@ import dominando.android.livros.auth.FirebaseSignIn
 import dominando.android.livros.router.AppRouter
 import dominando.android.presentation.Router
 import dominando.android.presentation.auth.Auth
+import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
-val appModule = module {
+object AppModule {
 
-    factory { (activity: FragmentActivity) ->
-        AppRouter(activity) as Router
-    }
+    fun load() {
+        loadKoinModules(module {
+            factory { (activity: FragmentActivity) ->
+                AppRouter(activity) as Router
+            }
 
-    factory { (activity: FragmentActivity) ->
-        FirebaseSignIn(activity) as Auth<Int, Intent>
+            factory { (activity: FragmentActivity) ->
+                FirebaseSignIn(activity) as Auth<Int, Intent>
+            }
+        })
     }
 }

@@ -1,6 +1,6 @@
-package dominando.android.data
+package dominando.android.domain.repository
 
-import dominando.android.data.model.Book
+import dominando.android.domain.entity.Book
 import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {

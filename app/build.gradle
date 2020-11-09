@@ -46,6 +46,10 @@ android {
 
 dependencies {
     implementation project(":presentation")
+    implementation project(":domain")
+    implementation project(":data_room")
+    implementation project(":data")
+    implementation project(":data_fb")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
@@ -65,6 +69,7 @@ dependencies {
 
     implementation "org.koin:koin-core:$koin_version"
     implementation "org.koin:koin-android:$koin_version"
+    implementation "org.koin:koin-android-viewmodel:$koin_version"
     implementation "org.koin:koin-android-scope:$koin_version"
 
     testImplementation "junit:junit:$junit_version"

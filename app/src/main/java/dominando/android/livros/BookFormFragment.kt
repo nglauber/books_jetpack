@@ -20,9 +20,11 @@ import dominando.android.presentation.BookFormViewModel
 import dominando.android.presentation.ViewState
 import dominando.android.presentation.binding.Book
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class BookFormFragment : BaseFragment() {
-    private val viewModel: BookFormViewModel by inject()
+
+    private val viewModel: BookFormViewModel by viewModel()
 
     private val filePicker: FilePicker by lazy {
         FilePicker(requireContext())

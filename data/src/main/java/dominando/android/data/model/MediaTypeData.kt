@@ -1,5 +1,5 @@
 package dominando.android.data.model
 
-enum class MediaType {
+enum class MediaTypeData {
     PAPER, EBOOK
 }

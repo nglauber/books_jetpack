@@ -9,7 +9,7 @@ import dominando.android.data_room.entity.Book
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface BookDao {
+internal interface BookDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun save(book: Book)
 

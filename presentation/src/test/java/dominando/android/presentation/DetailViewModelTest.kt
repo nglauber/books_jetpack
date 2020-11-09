@@ -1,7 +1,7 @@
 package dominando.android.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import dominando.android.data.model.Book
+import dominando.android.domain.entity.Book
 import dominando.android.domain.interactor.ViewBookDetailsUseCase
 import dominando.android.presentation.binding.BookConverter
 import dominando.android.presentation.data.DataFactory

@@ -63,19 +63,20 @@ To run this application, you must have to [create a Firebase Project](https://fi
 Afterwards, you must have to download the `google_services.json` file from the firebase console and add it `app` module root folder.
 If you want to save data on Firebase Cloud Firestore, [enable this database](https://firebase.google.com/docs/firestore/quickstart) for your project in Firebase Console. Also [enable the Firebase Cloud Storage](https://firebase.google.com/docs/storage/android/start).
 
-To choose the repository to save applications data, just make the following change in the [PresentationModule.kt](./presentation/src/main/java/dominando/android/presentation/di/PresentationModule.kt) file.
-```kotlin
-val presentationModule = module {
+To choose the data source you will save application data, just make the following change in the [BooksRepositoryImpl.kt](./data/src/main/java/dominando/android/data/repository/BooksRepositoryImpl.kt) file.
 
-    single {
-        // Use either of the lines below
-        
-        // Local repository with Room + SQLite
-        RoomRepository(AppDatabase.getDatabase(application), LocalFileHelper()) as BooksRepository
-        // Remote repository with Firebase
-        FbRepository() as BooksRepository
-    }
+```kotlin
+internal class BooksRepositoryImpl(
+   // Change RoomLocalData to FBData interface
+   private val localData: RoomLocalData,
+   private val entityMapper: Mapper<BookData, Book>,
+   private val dataMapper: Mapper<Book, BookData>
+) : BooksRepository {
+
+    ...
+}
 ```
+
 And that's it! You're good to go.
 
 

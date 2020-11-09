@@ -17,10 +17,11 @@ import dominando.android.livros.common.BaseFragment
 import dominando.android.livros.databinding.FragmentBookListBinding
 import dominando.android.presentation.BookListViewModel
 import dominando.android.presentation.ViewState
-import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class BookListFragment : BaseFragment() {
-    private val viewModel: BookListViewModel by inject()
+
+    private val viewModel: BookListViewModel by viewModel()
     private lateinit var dataBinding: FragmentBookListBinding
 
     private val bookAdapter by lazy {

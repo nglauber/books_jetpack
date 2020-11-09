@@ -1,11 +1,12 @@
 package dominando.android.domain.data
 
-import dominando.android.data.model.Book
-import dominando.android.data.model.MediaType
-import dominando.android.data.model.Publisher
+import dominando.android.domain.entity.Book
+import dominando.android.domain.entity.MediaType
+import dominando.android.domain.entity.Publisher
 import java.util.UUID
 
-object DataFactory {
+object DomainEntityFactory {
+
     fun dummyBookList() = listOf(
             Book().apply {
                 id = UUID.randomUUID().toString()

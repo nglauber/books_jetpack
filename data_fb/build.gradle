@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply from: "$rootProject.projectDir/commons.gradle"
 
 android {
     compileSdkVersion compile_sdk_version
@@ -20,6 +21,9 @@ android {
 
 dependencies {
     implementation project(":data")
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.google.firebase:firebase-core:$firebase_core_version"

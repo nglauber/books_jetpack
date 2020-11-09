@@ -1,11 +1,12 @@
 package dominando.android.data_room
 
-import dominando.android.data.model.Book
+import dominando.android.data.model.BookData
 import dominando.android.data_room.entity.Book as BookEntity
 import java.util.UUID
 
-object BookConverter {
-    fun fromData(binding: Book) = BookEntity(
+internal object BookConverter {
+
+    fun fromData(binding: BookData) = BookEntity(
             if (binding.id.isBlank()) UUID.randomUUID().toString() else binding.id,
             binding.title,
             binding.author,
@@ -18,16 +19,16 @@ object BookConverter {
             binding.rating
     )
 
-    fun toData(entity: BookEntity) = Book().apply {
+    fun toData(entity: BookEntity) = BookData().apply {
         id = entity.id
         title = entity.title
         author = entity.author
         coverUrl = entity.coverUrl
         pages = entity.pages
         year = entity.year
-        publisher = entity.publisher
+        publisher = entity.publisherData
         available = entity.available
-        mediaType = entity.mediaType
+        mediaType = entity.mediaTypeData
         rating = entity.rating
     }
 }

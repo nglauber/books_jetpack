@@ -1,22 +1,22 @@
 package dominando.android.data_room
 
-import dominando.android.data.BooksRepository
-import dominando.android.data.model.Book
-import dominando.android.data.util.FileHelper
+import dominando.android.data.model.BookData
+import dominando.android.data.source.RoomLocalData
+import dominando.android.data_room.filehelper.FileHelper
 import dominando.android.data_room.database.AppDatabase
 import java.lang.RuntimeException
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RoomRepository(
+internal class RoomLocalDataImpl(
     db: AppDatabase,
     private val fileHelper: FileHelper
-) : BooksRepository {
+) : RoomLocalData {
 
     private val bookDao = db.bookDao()
 
-    override suspend fun saveBook(book: Book) {
+    override suspend fun saveBook(book: BookData) {
         if (book.id.isBlank()) {
             book.id = UUID.randomUUID().toString()
         }
@@ -27,7 +27,7 @@ class RoomRepository(
         }
     }
 
-    override fun loadBooks(): Flow<List<Book>> {
+    override fun loadBooks(): Flow<List<BookData>> {
         return bookDao.bookByTitle()
                 .map { books ->
                     books.map { book ->
@@ -36,12 +36,12 @@ class RoomRepository(
                 }
     }
 
-    override fun loadBook(bookId: String): Flow<Book?> {
+    override fun loadBook(bookId: String): Flow<BookData?> {
         return bookDao.bookById(bookId)
                 .map { book -> BookConverter.toData(book) }
     }
 
-    override suspend fun remove(book: Book) {
+    override suspend fun remove(book: BookData) {
         bookDao.delete(BookConverter.fromData(book))
         fileHelper.deleteExistingCover(book)
     }

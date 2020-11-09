@@ -1,16 +1,16 @@
 package dominando.android.data_room.converters
 
 import androidx.room.TypeConverter
-import dominando.android.data.model.MediaType
+import dominando.android.data.model.MediaTypeData
 
-class MediaTypeConverter {
+internal class MediaTypeConverter {
     @TypeConverter
-    fun fromMediaType(value: MediaType): Int {
+    fun fromMediaType(value: MediaTypeData): Int {
         return value.let { value.ordinal }
     }
 
     @TypeConverter
-    fun toMediaType(value: Int): MediaType {
-        return MediaType.values()[value]
+    fun toMediaType(value: Int): MediaTypeData {
+        return MediaTypeData.values()[value]
     }
 }

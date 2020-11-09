@@ -8,7 +8,8 @@ import dominando.android.data_room.dao.BookDao
 import dominando.android.data_room.entity.Book
 
 @Database(entities = [Book::class], version = 1, exportSchema = false)
-abstract class AppDatabase : RoomDatabase() {
+internal abstract class AppDatabase : RoomDatabase() {
+
     abstract fun bookDao(): BookDao
 
     companion object {

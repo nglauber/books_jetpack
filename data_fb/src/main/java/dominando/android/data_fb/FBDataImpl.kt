@@ -8,8 +8,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
-import dominando.android.data.BooksRepository
-import dominando.android.data.model.Book
+import dominando.android.data.model.BookData
+import dominando.android.data.source.FBData
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -21,12 +21,13 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-class FbRepository : BooksRepository {
+internal class FBDataImpl : FBData {
+
     private val fbAuth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
     private val storageRef = FirebaseStorage.getInstance().reference.child(BOOKS_KEY)
 
-    override suspend fun saveBook(book: Book) {
+    override suspend fun saveBook(book: BookData) {
         return suspendCoroutine { continuation ->
             val currentUser = fbAuth.currentUser
             if (currentUser == null) {
@@ -61,7 +62,7 @@ class FbRepository : BooksRepository {
         }
     }
 
-    private fun uploadFile(book: Book) {
+    private fun uploadFile(book: BookData) {
         uploadPhoto(book).continueWithTask { urlTask ->
             File(book.coverUrl).delete()
             book.coverUrl = urlTask.result.toString()
@@ -73,7 +74,7 @@ class FbRepository : BooksRepository {
         }
     }
 
-    override fun loadBooks(): Flow<List<Book>> {
+    override fun loadBooks(): Flow<List<BookData>> {
         return callbackFlow {
             val currentUser = fbAuth.currentUser
             val subscription = firestore.collection(BOOKS_KEY)
@@ -86,13 +87,13 @@ class FbRepository : BooksRepository {
 
                         if (snapshot != null && !snapshot.isEmpty) {
                             val books = snapshot.map { document ->
-                                document.toObject(Book::class.java)
+                                document.toObject(BookData::class.java)
                             }
                             books.let {
                                 offer(it)
                             }
                         } else {
-                            offer(emptyList<Book>())
+                            offer(emptyList<BookData>())
                         }
                     }
             awaitClose {
@@ -101,7 +102,7 @@ class FbRepository : BooksRepository {
         }
     }
 
-    override fun loadBook(bookId: String): Flow<Book?> {
+    override fun loadBook(bookId: String): Flow<BookData?> {
         return callbackFlow {
             val subscription = firestore.collection(BOOKS_KEY)
                     .document(bookId)
@@ -111,7 +112,7 @@ class FbRepository : BooksRepository {
                             return@addSnapshotListener
                         }
                         if (snapshot != null && snapshot.exists()) {
-                            val book = snapshot.toObject(Book::class.java)
+                            val book = snapshot.toObject(BookData::class.java)
                             book?.let {
                                 offer(it)
                             }
@@ -123,7 +124,7 @@ class FbRepository : BooksRepository {
         }
     }
 
-    override suspend fun remove(book: Book) {
+    override suspend fun remove(book: BookData) {
         return suspendCoroutine { continuation ->
             val db = firestore
             db.collection(BOOKS_KEY)
@@ -149,7 +150,7 @@ class FbRepository : BooksRepository {
         }
     }
 
-    private fun uploadPhoto(book: Book): Task<Uri> {
+    private fun uploadPhoto(book: BookData): Task<Uri> {
         compressPhoto(book.coverUrl)
         val storageRef = storageRef.child(book.id)
         return storageRef.putFile(Uri.parse(book.coverUrl))

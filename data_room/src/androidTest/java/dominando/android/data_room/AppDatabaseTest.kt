@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import dominando.android.data.model.MediaType
-import dominando.android.data.model.Publisher
+import dominando.android.data.model.MediaTypeData
+import dominando.android.data.model.PublisherData
 import dominando.android.data_room.database.AppDatabase
 import dominando.android.data_room.entity.Book
 import java.util.UUID
@@ -32,9 +32,9 @@ class AppDatabaseTest {
             available = true,
             coverUrl = "",
             pages = 954,
-            publisher = Publisher(UUID.randomUUID().toString(), "Novatec"),
+            publisherData = PublisherData(UUID.randomUUID().toString(), "Novatec"),
             year = 2018,
-            mediaType = MediaType.EBOOK,
+            mediaTypeData = MediaTypeData.EBOOK,
             rating = 5f
     )
 
@@ -77,9 +77,9 @@ class AppDatabaseTest {
                 coverUrl = "www.nglauber.com.br",
                 pages = 1000,
                 year = 2016,
-                publisher = Publisher(UUID.randomUUID().toString(), "Test"),
+                publisherData = PublisherData(UUID.randomUUID().toString(), "Test"),
                 available = false,
-                mediaType = MediaType.PAPER,
+                mediaTypeData = MediaTypeData.PAPER,
                 rating = 2.5f
         )
         dao.save(updatedBook)
